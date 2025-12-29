@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,7 @@ import { DifficultyTabs } from "@/components/common/difficulty-tabs"
 import { Search, BookOpen, FlaskConical, PenLine, Volume2 } from "lucide-react"
 import type { Difficulty } from "@/lib/difficulty-styles"
 import { getDifficultyStyles } from "@/lib/difficulty-styles"
+import { cancelSpeech, speakText } from "@/lib/speech"
 
 // Sample tense data
 const tenseData = {
@@ -276,17 +277,16 @@ function PracticeSection({
   const [isSpeaking, setIsSpeaking] = useState(false)
 
   const speak = (text: string) => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = "en-US"
-      utterance.rate = 0.9
-      utterance.onstart = () => setIsSpeaking(true)
-      utterance.onend = () => setIsSpeaking(false)
-      utterance.onerror = () => setIsSpeaking(false)
-      window.speechSynthesis.speak(utterance)
-    }
+    speakText(text, {
+      rate: 0.9,
+      preferredLangs: ["en-IN", "en-GB", "en-US"],
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+    })
   }
+
+  useEffect(() => cancelSpeech, [])
 
   const questions = {
     past: {

@@ -1,37 +1,18 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState, useEffect, useCallback, useRef, type PointerEvent } from "react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { DifficultyTabs } from "@/components/common/difficulty-tabs"
 import { cn } from "@/lib/utils"
+import { cancelSpeech, speakText, preloadVoices } from "@/lib/speech"
 import { getDifficultyColors, type Difficulty } from "@/lib/difficulty-styles"
-import { Play, Pause, RotateCcw, Trophy, Timer, Zap, Target, X, Maximize, Minimize } from "lucide-react"
-
-interface FallingWord {
-  id: string
-  word: string
-  x: number
-  y: number
-  speed: number
-  index: number
-}
-
-interface GameSentence {
-  native: string
-  english: string
-  words: string[]
-}
+import { X } from "lucide-react"
+import { ControlsHeader } from "./rainfall/controls-header"
+import { EndGameDialog } from "./rainfall/end-game-dialog"
+import { GameArea } from "./rainfall/game-area"
+import { SelectedWordsCard } from "./rainfall/selected-words-card"
+import { SentenceCard } from "./rainfall/sentence-card"
+import { StatsBadges } from "./rainfall/stats-badges"
+import { type FallingWord, type GameSentence } from "./rainfall/types"
 
 const sentences: Record<Difficulty, GameSentence[]> = {
   easy: [
@@ -59,25 +40,31 @@ const sentences: Record<Difficulty, GameSentence[]> = {
   ],
 }
 
+const getInitialTime = (level: Difficulty) => (level === "easy" ? 60 : level === "medium" ? 120 : 180)
+
 export function RainfallGame() {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy")
   const [gameState, setGameState] = useState<"idle" | "playing" | "paused" | "ended">("idle")
   const [score, setScore] = useState(0)
   const [combo, setCombo] = useState(0)
-  const [timeLeft, setTimeLeft] = useState(60)
+  const [timeLeft, setTimeLeft] = useState(getInitialTime("easy"))
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0)
   const [selectedWords, setSelectedWords] = useState<string[]>([])
-  const [fallingWords, setFallingWords] = useState<FallingWord[]>([])
   const [correctCount, setCorrectCount] = useState(0)
   const [wrongCount, setWrongCount] = useState(0)
   const [showEndDialog, setShowEndDialog] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [nextWordIndex, setNextWordIndex] = useState(0)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
 
   const gameAreaRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const fullscreenContainerRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<number | null>(null)
   const needsRespawnRef = useRef(false)
+  const wordsStateRef = useRef<FallingWord[]>([])
+  const nextWordIndexRef = useRef(0)
 
   const currentSentences = sentences[difficulty]
   const currentSentence = currentSentences[currentSentenceIndex % currentSentences.length]
@@ -124,6 +111,36 @@ export function RainfallGame() {
     }
   }, [isFullscreen])
 
+  const toggleMute = useCallback(() => {
+    setIsMuted((prev) => {
+      const next = !prev
+      if (next) {
+        cancelSpeech()
+      }
+      return next
+    })
+  }, [])
+
+  const speakWord = useCallback(
+    (text: string) => {
+      speakText(text, {
+        rate: difficulty === "hard" ? 0.85 : 0.9,
+        pitch: 1,
+        preferredLangs: ["en-IN", "en-GB", "en-US"],
+        muted: isMuted,
+        allowQueue: true,
+      })
+    },
+    [difficulty, isMuted],
+  )
+
+  useEffect(() => {
+    preloadVoices()
+    return () => {
+      cancelSpeech()
+    }
+  }, [])
+
   useEffect(() => {
     const handleFullscreenChange = () => {
       const doc = document as Document & {
@@ -147,29 +164,102 @@ export function RainfallGame() {
 
   const spawnWords = useCallback(
     (sentence: GameSentence) => {
-      if (!gameAreaRef.current) return
+      if (!canvasRef.current || !gameAreaRef.current) return
 
-      const width = gameAreaRef.current.clientWidth
-      const padding = 60
+      const rect = gameAreaRef.current.getBoundingClientRect()
+      const width = rect.width
+      const padding = 80
 
-      const newWords: FallingWord[] = sentence.words.map((word, i) => ({
-        id: `${Date.now()}-${i}-${Math.random()}`,
+      const newWords: FallingWord[] = sentence.words.map((word, index) => ({
+        id: `${Date.now()}-${index}-${Math.random()}`,
         word,
         x: padding + Math.random() * (width - padding * 2),
-        y: -60 - i * 100 - Math.random() * 50,
+        y: -60 - index * 100 - Math.random() * 50,
         speed: baseSpeed + Math.random() * 30,
-        index: i,
+        index,
+        removed: false,
       }))
 
-      setFallingWords(newWords)
+      wordsStateRef.current = newWords
+      nextWordIndexRef.current = 0
       setNextWordIndex(0)
       needsRespawnRef.current = false
     },
     [baseSpeed],
   )
 
+  const handleWordClick = useCallback(
+    (clientX: number, clientY: number) => {
+      if (gameState !== "playing" || !canvasRef.current) return
+
+      const canvas = canvasRef.current
+      const rect = canvas.getBoundingClientRect()
+      const clickX = clientX - rect.left
+      const clickY = clientY - rect.top
+
+      for (let i = wordsStateRef.current.length - 1; i >= 0; i--) {
+        const fw = wordsStateRef.current[i]
+        if (fw.removed) continue
+
+        const ctx = canvas.getContext("2d")
+        if (!ctx) continue
+
+        const fontSize = difficulty === "easy" ? 24 : difficulty === "medium" ? 18 : 16
+        const paddingX = difficulty === "easy" ? 24 : 16
+        const paddingY = difficulty === "easy" ? 12 : 8
+
+        ctx.font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`
+        const metrics = ctx.measureText(fw.word)
+        const wordWidth = metrics.width + paddingX * 2
+        const wordHeight = fontSize + paddingY * 2
+
+        const wordLeft = fw.x - wordWidth / 2
+        const wordRight = fw.x + wordWidth / 2
+        const wordTop = fw.y
+        const wordBottom = fw.y + wordHeight
+
+        if (clickX >= wordLeft && clickX <= wordRight && clickY >= wordTop && clickY <= wordBottom) {
+          speakWord(fw.word)
+          if (fw.index === nextWordIndexRef.current) {
+            fw.removed = true
+            fw.opacity = 1
+            fw.scale = 1
+            setSelectedWords((prev) => [...prev, fw.word])
+            setNextWordIndex((prev) => prev + 1)
+            nextWordIndexRef.current++
+          }
+          break
+        }
+      }
+    },
+    [gameState, difficulty, speakWord],
+  )
+
+  const handlePointerDown = useCallback(
+    (event: PointerEvent<HTMLCanvasElement>) => {
+      event.preventDefault()
+      handleWordClick(event.clientX, event.clientY)
+    },
+    [handleWordClick],
+  )
+
   useEffect(() => {
-    if (gameState !== "playing") return
+    if (gameState !== "playing" || !canvasRef.current) {
+      if (animationRef.current && gameState !== "playing") {
+        cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
+      }
+      return
+    }
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const CARD_COLOR = "#ffffff"
+    const BORDER_COLOR = "#64748b"
+    const PRESENT_COLOR = "#10b981"
+    const FOREGROUND_COLOR = "#1e293b"
 
     let lastTime = performance.now()
 
@@ -177,22 +267,108 @@ export function RainfallGame() {
       const deltaTime = (currentTime - lastTime) / 1000
       lastTime = currentTime
 
-      setFallingWords((prev) => {
-        const gameHeight = gameAreaRef.current?.clientHeight || 400
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-        const updated = prev.map((fw) => ({
-          ...fw,
-          y: fw.y + fw.speed * deltaTime,
-        }))
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
+      gradient.addColorStop(0, "rgba(0, 0, 0, 0.02)")
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0.05)")
+      ctx.fillStyle = gradient
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        // Check if all words fell off screen
-        const allFallen = updated.every((fw) => fw.y > gameHeight + 50)
-        if (allFallen && updated.length > 0) {
-          needsRespawnRef.current = true
+      let allFallen = true
+      const fontSize = difficulty === "easy" ? 24 : difficulty === "medium" ? 18 : 16
+      const paddingX = difficulty === "easy" ? 24 : 16
+      const paddingY = difficulty === "easy" ? 12 : 8
+
+      ctx.font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`
+
+      wordsStateRef.current.forEach((fw) => {
+        if (fw.removed) {
+          if (fw.opacity === undefined) fw.opacity = 1
+          if (fw.scale === undefined) fw.scale = 1
+
+          fw.opacity -= deltaTime * 4
+          fw.scale += deltaTime * 2
+
+          if (fw.opacity <= 0) return
+        } else {
+          fw.y += fw.speed * deltaTime
+          if (fw.scale === undefined) fw.scale = 1
+          if (fw.opacity === undefined) fw.opacity = 1
+
+          if (fw.y <= canvas.height + 50) {
+            allFallen = false
+          }
+
+          if (fw.y < -100 || fw.y > canvas.height + 100) return
         }
 
-        return updated
+        const isNextWord = fw.index === nextWordIndexRef.current
+
+        const metrics = ctx.measureText(fw.word)
+        const wordWidth = metrics.width + paddingX * 2
+        const wordHeight = fontSize + paddingY * 2
+
+        const x = fw.x - wordWidth / 2
+        const y = fw.y
+
+        ctx.globalAlpha = fw.opacity || 1
+
+        ctx.save()
+
+        const centerX = fw.x
+        const centerY = y + wordHeight / 2
+        const scale = fw.scale || 1
+
+        ctx.translate(centerX, centerY)
+        ctx.scale(scale, scale)
+        ctx.translate(-centerX, -centerY)
+
+        ctx.shadowColor = "rgba(0, 0, 0, 0.15)"
+        ctx.shadowBlur = 8
+        ctx.shadowOffsetY = 3
+
+        ctx.fillStyle = CARD_COLOR
+        ctx.strokeStyle = isNextWord ? PRESENT_COLOR : BORDER_COLOR
+        ctx.lineWidth = isNextWord ? 3 : 2
+
+        const radius = 12
+        ctx.beginPath()
+        ctx.roundRect(x, y, wordWidth, wordHeight, radius)
+        ctx.fill()
+        ctx.stroke()
+
+        ctx.shadowColor = "transparent"
+        ctx.shadowBlur = 0
+        ctx.shadowOffsetY = 0
+
+        if (isNextWord && !fw.removed) {
+          const dotSize = 6 + Math.sin(currentTime * 0.008) * 2
+          const glowSize = 3 + Math.sin(currentTime * 0.008) * 1
+
+          ctx.shadowColor = PRESENT_COLOR
+          ctx.shadowBlur = glowSize
+
+          ctx.fillStyle = PRESENT_COLOR
+          ctx.beginPath()
+          ctx.arc(x + wordWidth + 8, y + 8, dotSize, 0, Math.PI * 2)
+          ctx.fill()
+
+          ctx.shadowBlur = 0
+        }
+
+        ctx.fillStyle = isNextWord ? PRESENT_COLOR : FOREGROUND_COLOR
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText(fw.word, fw.x, y + wordHeight / 2)
+
+        ctx.restore()
+        ctx.globalAlpha = 1
       })
+
+      if (allFallen && wordsStateRef.current.length > 0) {
+        needsRespawnRef.current = true
+      }
 
       animationRef.current = requestAnimationFrame(gameLoop)
     }
@@ -204,14 +380,38 @@ export function RainfallGame() {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [gameState])
+  }, [gameState, difficulty])
+
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      if (!canvasRef.current || !gameAreaRef.current) return
+
+      const rect = gameAreaRef.current.getBoundingClientRect()
+      const dpr = window.devicePixelRatio || 1
+
+      canvasRef.current.style.width = `${rect.width}px`
+      canvasRef.current.style.height = `${rect.height}px`
+
+      canvasRef.current.width = rect.width * dpr
+      canvasRef.current.height = rect.height * dpr
+
+      const ctx = canvasRef.current.getContext("2d")
+      if (ctx) {
+        ctx.scale(dpr, dpr)
+      }
+    }
+
+    updateCanvasSize()
+    window.addEventListener("resize", updateCanvasSize)
+
+    return () => window.removeEventListener("resize", updateCanvasSize)
+  }, [isFullscreen])
 
   useEffect(() => {
     if (gameState !== "playing") return
 
     const checkRespawn = setInterval(() => {
       if (needsRespawnRef.current) {
-        // Words fell off without completing - count as miss and respawn
         setWrongCount((prev) => prev + 1)
         setCombo(0)
         setSelectedWords([])
@@ -230,6 +430,7 @@ export function RainfallGame() {
         if (prev <= 1) {
           setGameState("ended")
           setShowEndDialog(true)
+          setIsSidebarOpen(false)
           return 0
         }
         return prev - 1
@@ -237,6 +438,24 @@ export function RainfallGame() {
     }, 1000)
 
     return () => clearInterval(timer)
+  }, [gameState])
+
+  useEffect(() => {
+    if (gameState === "playing" && timeLeft <= 0) {
+      setGameState("ended")
+      setShowEndDialog(true)
+      setIsSidebarOpen(false)
+    }
+  }, [gameState, timeLeft])
+
+  useEffect(() => {
+    if (gameState === "ended") {
+      setShowEndDialog(true)
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
+      }
+    }
   }, [gameState])
 
   useEffect(() => {
@@ -254,7 +473,6 @@ export function RainfallGame() {
         setWrongCount((prev) => prev + 1)
       }
 
-      // Move to next sentence
       const nextIndex = currentSentenceIndex + 1
       const nextSentence = currentSentences[nextIndex % currentSentences.length]
 
@@ -266,310 +484,170 @@ export function RainfallGame() {
     }
   }, [selectedWords, currentSentence, combo, difficulty, currentSentenceIndex, currentSentences, spawnWords, gameState])
 
-  const handleWordClick = useCallback(
-    (wordId: string, word: string, wordIndex: number) => {
-      if (gameState !== "playing") return
-
-      // Check if this is the next expected word
-      if (wordIndex === nextWordIndex) {
-        setSelectedWords((prev) => [...prev, word])
-        setFallingWords((prev) => prev.filter((fw) => fw.id !== wordId))
-        setNextWordIndex((prev) => prev + 1)
-      }
-    },
-    [gameState, nextWordIndex],
-  )
-
   const startGame = useCallback(() => {
     setGameState("playing")
     setScore(0)
     setCombo(0)
-    setTimeLeft(60)
+    setTimeLeft(getInitialTime(difficulty))
     setSelectedWords([])
     setCurrentSentenceIndex(0)
     setCorrectCount(0)
     setWrongCount(0)
     setNextWordIndex(0)
+    setShowEndDialog(false)
+    setIsSidebarOpen(false)
     needsRespawnRef.current = false
 
-    // Spawn initial words
     const firstSentence = currentSentences[0]
     setTimeout(() => spawnWords(firstSentence), 100)
 
-    // Enter fullscreen
     if (!isFullscreen && fullscreenContainerRef.current) {
       toggleFullscreen()
     }
-  }, [currentSentences, spawnWords, isFullscreen, toggleFullscreen])
+  }, [currentSentences, difficulty, spawnWords, isFullscreen, toggleFullscreen])
 
   const pauseGame = useCallback(() => {
     setGameState((prev) => (prev === "playing" ? "paused" : "playing"))
   }, [])
 
-  const resetGame = useCallback(() => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current)
-    }
-    setGameState("idle")
-    setScore(0)
-    setCombo(0)
-    setTimeLeft(60)
-    setSelectedWords([])
-    setFallingWords([])
-    setCurrentSentenceIndex(0)
-    setNextWordIndex(0)
-    setShowEndDialog(false)
-    needsRespawnRef.current = false
-    if (isFullscreen) {
-      toggleFullscreen()
-    }
-  }, [isFullscreen, toggleFullscreen])
+  const resetGame = useCallback(
+    (targetDifficulty?: Difficulty) => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+      setGameState("idle")
+      setScore(0)
+      setCombo(0)
+      setTimeLeft(getInitialTime(targetDifficulty ?? difficulty))
+      setSelectedWords([])
+      setCurrentSentenceIndex(0)
+      setNextWordIndex(0)
+      setShowEndDialog(false)
+      needsRespawnRef.current = false
+      wordsStateRef.current = []
+      nextWordIndexRef.current = 0
+      if (isFullscreen) {
+        toggleFullscreen()
+      }
+    },
+    [difficulty, isFullscreen, toggleFullscreen],
+  )
 
   return (
     <div
       ref={fullscreenContainerRef}
-      className={cn("space-y-6", isFullscreen && "fixed inset-0 z-50 bg-background p-4 overflow-auto flex flex-col")}
+      className={cn(
+        "space-y-6",
+        isFullscreen && "fixed inset-0 z-40 bg-background overflow-hidden",
+        isFullscreen && "lg:grid lg:grid-cols-[320px_1fr] lg:gap-4 lg:p-4",
+        isFullscreen && "md:grid md:grid-cols-[280px_1fr] md:gap-3 md:p-3",
+        isFullscreen && "p-2",
+      )}
     >
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <DifficultyTabs
-          value={difficulty}
-          onValueChange={(d) => {
+      <div
+        className={cn(
+          "space-y-4",
+          isFullscreen && "lg:overflow-y-auto lg:pr-2",
+          isFullscreen && "md:overflow-y-auto md:pr-2",
+          isFullscreen &&
+            "absolute left-0 top-0 bottom-0 bg-background/95 backdrop-blur z-20 transition-transform duration-300 overflow-y-auto p-4 w-72 border-r",
+          isFullscreen && !isSidebarOpen && "-translate-x-full",
+          isFullscreen && isSidebarOpen && "translate-x-0 mt-15",
+          isFullscreen && "lg:relative lg:translate-x-0 lg:w-auto lg:border-0 lg:bg-transparent lg:backdrop-blur-none",
+          isFullscreen && "md:relative md:translate-x-0 md:w-auto md:border-0 md:bg-transparent md:backdrop-blur-none",
+        )}
+      >
+        <ControlsHeader
+          difficulty={difficulty}
+          onDifficultyChange={(d) => {
             setDifficulty(d)
-            resetGame()
+            resetGame(d)
           }}
-          disabled={gameState === "playing" || gameState === "paused"}
-          className="w-full sm:w-auto"
+          difficultyDisabled={gameState === "playing" || gameState === "paused"}
+          isFullscreen={isFullscreen}
+          toggleFullscreen={toggleFullscreen}
+          isMuted={isMuted}
+          toggleMute={toggleMute}
+          gameState={gameState}
+          startGame={startGame}
+          pauseGame={pauseGame}
+          resetGame={resetGame}
         />
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={toggleFullscreen} className="gap-2 bg-transparent" size="icon">
-            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-          </Button>
+        <StatsBadges
+          score={score}
+          combo={combo}
+          timeLeft={timeLeft}
+          correctCount={correctCount}
+          wrongCount={wrongCount}
+        />
 
-          {gameState === "idle" ? (
-            <Button onClick={startGame} className="gap-2">
-              <Play className="h-4 w-4" />
-              Start Game
-            </Button>
-          ) : (
-            <>
-              <Button variant="outline" onClick={pauseGame} className="gap-2 bg-transparent">
-                {gameState === "paused" ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-                {gameState === "paused" ? "Resume" : "Pause"}
-              </Button>
-              <Button variant="outline" onClick={resetGame} className="gap-2 bg-transparent">
-                <RotateCcw className="h-4 w-4" />
-                Reset
-              </Button>
-            </>
-          )}
-        </div>
+        <SentenceCard sentence={currentSentence} nextWordIndex={nextWordIndex} borderClass={colors.border} />
+
+        <SelectedWordsCard
+          words={selectedWords}
+          totalWords={currentSentence.words.length}
+          primaryClass={colors.primary}
+          size="compact"
+        />
       </div>
 
-      {/* Stats badges */}
-      <div className="flex flex-wrap gap-4">
-        <Badge variant="outline" className="gap-2 px-4 py-2 text-base">
-          <Trophy className="h-4 w-4 text-future" />
-          Score: {score}
-        </Badge>
-        <Badge variant="outline" className={cn("gap-2 px-4 py-2 text-base", combo > 0 && "bg-present-light")}>
-          <Zap className="h-4 w-4 text-present" />
-          Combo: x{combo + 1}
-        </Badge>
-        <Badge
-          variant="outline"
-          className={cn("gap-2 px-4 py-2 text-base", timeLeft < 10 && "bg-destructive/10 border-destructive")}
-        >
-          <Timer className="h-4 w-4" />
-          Time: {timeLeft}s
-        </Badge>
-        <Badge variant="outline" className="gap-2 px-4 py-2 text-base">
-          <Target className="h-4 w-4" />
-          {correctCount}/{correctCount + wrongCount}
-        </Badge>
-      </div>
-
-      {/* Current sentence to build */}
-      <Card className={cn("border-2", colors.border)}>
-        <CardContent className="py-4">
-          <p className="text-sm text-muted-foreground mb-1">Build this sentence:</p>
-          <p className="text-lg font-medium">{currentSentence.native}</p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Click words in order:{" "}
-            {currentSentence.words.map((w, i) => (
-              <span
-                key={i}
-                className={cn(
-                  "mx-1",
-                  i < nextWordIndex && "line-through opacity-50",
-                  i === nextWordIndex && "font-bold text-present",
-                )}
-              >
-                {w}
-              </span>
-            ))}
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* Game area */}
-      <Card className={cn("border-2 overflow-hidden", isFullscreen && "flex-1")}>
-        <CardContent className="p-0 h-full">
-          <div
-            ref={gameAreaRef}
-            className={cn(
-              "relative bg-gradient-to-b from-muted/30 to-muted/60",
-              isFullscreen ? "h-full min-h-[300px]" : "h-[400px]",
-              gameState === "paused" && "opacity-50",
-            )}
+      <div className={cn(isFullscreen ? "" : "space-y-6", isFullscreen && "relative h-full")}>
+        {isFullscreen && (
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="lg:hidden md:hidden absolute top-2 left-2 z-30 h-10 w-10"
           >
-            {isFullscreen && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={toggleFullscreen}
-                className="absolute top-4 right-4 z-10 gap-2"
-              >
-                <Minimize className="h-4 w-4" />
-                Exit Fullscreen
-              </Button>
-            )}
-
-            {fallingWords.map((fw) => {
-              const isNextWord = fw.index === nextWordIndex
-              const isClickable = fw.index === nextWordIndex
-
-              return (
-                <button
-                  key={fw.id}
-                  className={cn(
-                    "absolute px-4 py-2 rounded-xl font-medium transition-all",
-                    "bg-card border-2 shadow-lg",
-                    isClickable ? "cursor-pointer hover:scale-110 hover:shadow-xl" : "cursor-not-allowed opacity-60",
-                    isNextWord ? "ring-2 ring-present ring-offset-2" : "",
-                    colors.border,
-                    difficulty === "easy" && "text-xl px-6 py-3",
-                    difficulty === "hard" && "text-sm px-3 py-1",
-                  )}
-                  style={{
-                    left: fw.x,
-                    top: fw.y,
-                    transform: "translateX(-50%)",
-                  }}
-                  onClick={() => handleWordClick(fw.id, fw.word, fw.index)}
-                  disabled={!isClickable}
-                >
-                  {fw.word}
-                  {isNextWord && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-present rounded-full animate-ping" />
-                  )}
-                </button>
-              )
-            })}
-
-            {/* Idle state overlay */}
-            {gameState === "idle" && (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/80">
-                <div className="text-center space-y-4">
-                  <h3 className="text-2xl font-bold">Word Rainfall</h3>
-                  <p className="text-muted-foreground">Click words in order to build sentences</p>
-                  <Button onClick={startGame} size="lg" className="gap-2">
-                    <Play className="h-5 w-5" />
-                    Start Playing
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* Paused state overlay */}
-            {gameState === "paused" && (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/80">
-                <div className="text-center space-y-4">
-                  <h3 className="text-2xl font-bold">Paused</h3>
-                  <Button onClick={pauseGame} size="lg" className="gap-2">
-                    <Play className="h-5 w-5" />
-                    Resume
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Selected words progress */}
-      <Card className="border-2">
-        <CardContent className="py-4">
-          <p className="text-sm text-muted-foreground mb-2">Your sentence:</p>
-          <div className="flex flex-wrap gap-2 min-h-10">
-            {selectedWords.length > 0 ? (
-              selectedWords.map((word, i) => (
-                <Badge key={i} className={cn("text-base px-4 py-2", colors.primary)}>
-                  {word}
-                </Badge>
-              ))
+            {isSidebarOpen ? (
+              <X className="h-5 w-5" />
             ) : (
-              <span className="text-muted-foreground">Click falling words to build your sentence...</span>
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             )}
-          </div>
-          <Progress value={(selectedWords.length / currentSentence.words.length) * 100} className="h-2 mt-4" />
-        </CardContent>
-      </Card>
+          </Button>
+        )}
 
-      {/* End game dialog */}
-      <Dialog open={showEndDialog} onOpenChange={setShowEndDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-2xl">
-              <Trophy className="h-6 w-6 text-future" />
-              Game Over!
-            </DialogTitle>
-            <DialogDescription>Here&apos;s how you did:</DialogDescription>
-          </DialogHeader>
+        {isFullscreen && isSidebarOpen && (
+          <div className="lg:hidden md:hidden fixed inset-0 bg-black/50 z-10" onClick={() => setIsSidebarOpen(false)} />
+        )}
 
-          <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="p-4 text-center">
-                <p className="text-3xl font-bold text-future">{score}</p>
-                <p className="text-sm text-muted-foreground">Total Score</p>
-              </Card>
-              <Card className="p-4 text-center">
-                <p className="text-3xl font-bold text-present">
-                  {correctCount + wrongCount > 0 ? Math.round((correctCount / (correctCount + wrongCount)) * 100) : 0}%
-                </p>
-                <p className="text-sm text-muted-foreground">Accuracy</p>
-              </Card>
-            </div>
-            <div className="flex justify-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <span className="w-3 h-3 rounded-full bg-present" />
-                {correctCount} Correct
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-3 h-3 rounded-full bg-destructive" />
-                {wrongCount} Wrong
-              </span>
-            </div>
-          </div>
+        <GameArea
+          gameAreaRef={gameAreaRef}
+          canvasRef={canvasRef}
+          gameState={gameState}
+          isFullscreen={isFullscreen}
+          toggleFullscreen={toggleFullscreen}
+          handlePointerDown={handlePointerDown}
+          startGame={startGame}
+          pauseGame={pauseGame}
+          sentence={currentSentence}
+          nextWordIndex={nextWordIndex}
+          borderClass={colors.border}
+        />
 
-          <DialogFooter className="flex gap-2 sm:gap-0">
-            <Button variant="outline" onClick={resetGame} className="gap-2 bg-transparent">
-              <X className="h-4 w-4" />
-              Close
-            </Button>
-            <Button
-              onClick={() => {
-                setShowEndDialog(false)
-                startGame()
-              }}
-              className="gap-2"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Play Again
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        {!isFullscreen && (
+          <SelectedWordsCard
+            words={selectedWords}
+            totalWords={currentSentence.words.length}
+            primaryClass={colors.primary}
+            size="regular"
+          />
+        )}
+      </div>
+
+      <EndGameDialog
+        open={showEndDialog}
+        onOpenChange={setShowEndDialog}
+        score={score}
+        correctCount={correctCount}
+        wrongCount={wrongCount}
+        resetGame={resetGame}
+        startGame={startGame}
+        container={fullscreenContainerRef.current}
+      />
     </div>
   )
 }
