@@ -1,0 +1,90 @@
+{
+  "tense": "present",
+  "types": [
+    {
+      "name": "Simple Present",
+      "formula": "Subject + V1 (s/es) + Object",
+      "usage": "Habits, facts, routines"
+    },
+    {
+      "name": "Present Continuous",
+      "formula": "Subject + is/am/are + V1+ing + Object",
+      "usage": "Actions happening now"
+    },
+    {
+      "name": "Present Perfect",
+      "formula": "Subject + has/have + V3 + Object",
+      "usage": "Completed actions with present relevance"
+    },
+    {
+      "name": "Present Perfect Continuous",
+      "formula": "Subject + has/have + been + V1+ing + Object",
+      "usage": "Actions that started in past and continue"
+    }
+  ],
+  "sentences": [
+    {
+      "id": "pr-001",
+      "difficulty": "easy",
+      "nativeLanguage": "hi",
+      "nativeText": "मैं रोज़ सुबह चाय पीता हूँ।",
+      "englishText": "I drink tea every morning.",
+      "formula": "Subject + V1 + Object",
+      "type": "Simple Present"
+    },
+    {
+      "id": "pr-002",
+      "difficulty": "easy",
+      "nativeLanguage": "hi",
+      "nativeText": "वह स्कूल जाती है।",
+      "englishText": "She goes to school.",
+      "formula": "Subject + V1(es) + Object",
+      "type": "Simple Present"
+    },
+    {
+      "id": "pr-003",
+      "difficulty": "easy",
+      "nativeLanguage": "en",
+      "nativeText": "The sun rises in the east.",
+      "englishText": "The sun rises in the east.",
+      "formula": "Subject + V1(s) + Object",
+      "type": "Simple Present"
+    },
+    {
+      "id": "pr-004",
+      "difficulty": "medium",
+      "nativeLanguage": "hi",
+      "nativeText": "वे अभी खाना खा रहे हैं।",
+      "englishText": "They are eating food right now.",
+      "formula": "Subject + are + V1+ing + Object",
+      "type": "Present Continuous"
+    },
+    {
+      "id": "pr-005",
+      "difficulty": "medium",
+      "nativeLanguage": "en",
+      "nativeText": "I am learning English.",
+      "englishText": "I am learning English.",
+      "formula": "Subject + am + V1+ing + Object",
+      "type": "Present Continuous"
+    },
+    {
+      "id": "pr-006",
+      "difficulty": "hard",
+      "nativeLanguage": "hi",
+      "nativeText": "मैंने यह किताब पढ़ ली है।",
+      "englishText": "I have read this book.",
+      "formula": "Subject + have + V3 + Object",
+      "type": "Present Perfect"
+    },
+    {
+      "id": "pr-007",
+      "difficulty": "hard",
+      "nativeLanguage": "en",
+      "nativeText": "She has been working here for five years.",
+      "englishText": "She has been working here for five years.",
+      "formula": "Subject + has + been + V1+ing + Time",
+      "type": "Present Perfect Continuous"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "tense": "past",
+  "types": [
+    {
+      "name": "Simple Past",
+      "formula": "Subject + V2 + Object",
+      "usage": "Completed actions in the past"
+    },
+    {
+      "name": "Past Continuous",
+      "formula": "Subject + was/were + V1+ing + Object",
+      "usage": "Ongoing actions in the past"
+    },
+    {
+      "name": "Past Perfect",
+      "formula": "Subject + had + V3 + Object",
+      "usage": "Actions completed before another past action"
+    },
+    {
+      "name": "Past Perfect Continuous",
+      "formula": "Subject + had + been + V1+ing + Object",
+      "usage": "Duration of action before another past action"
+    }
+  ],
+  "sentences": [
+    {
+      "id": "pa-001",
+      "difficulty": "easy",
+      "nativeLanguage": "hi",
+      "nativeText": "मैंने कल खाना खाया।",
+      "englishText": "I ate food yesterday.",
+      "formula": "Subject + V2 + Object",
+      "type": "Simple Past"
+    },
+    {
+      "id": "pa-002",
+      "difficulty": "easy",
+      "nativeLanguage": "en",
+      "nativeText": "She went to the market.",
+      "englishText": "She went to the market.",
+      "formula": "Subject + V2 + Object",
+      "type": "Simple Past"
+    },
+    {
+      "id": "pa-003",
+      "difficulty": "easy",
+      "nativeLanguage": "hi",
+      "nativeText": "हमने मैच जीता।",
+      "englishText": "We won the match.",
+      "formula": "Subject + V2 + Object",
+      "type": "Simple Past"
+    },
+    {
+      "id": "pa-004",
+      "difficulty": "medium",
+      "nativeLanguage": "hi",
+      "nativeText": "वह पढ़ रही थी जब मैं आया।",
+      "englishText": "She was studying when I came.",
+      "formula": "Subject + was + V1+ing + when clause",
+      "type": "Past Continuous"
+    },
+    {
+      "id": "pa-005",
+      "difficulty": "medium",
+      "nativeLanguage": "en",
+      "nativeText": "They were playing cricket.",
+      "englishText": "They were playing cricket.",
+      "formula": "Subject + were + V1+ing + Object",
+      "type": "Past Continuous"
+    },
+    {
+      "id": "pa-006",
+      "difficulty": "hard",
+      "nativeLanguage": "hi",
+      "nativeText": "ट्रेन आने से पहले वह स्टेशन पहुँच गया था।",
+      "englishText": "He had reached the station before the train arrived.",
+      "formula": "Subject + had + V3 + before clause",
+      "type": "Past Perfect"
+    },
+    {
+      "id": "pa-007",
+      "difficulty": "hard",
+      "nativeLanguage": "en",
+      "nativeText": "They had been waiting for two hours.",
+      "englishText": "They had been waiting for two hours.",
+      "formula": "Subject + had + been + V1+ing + Time",
+      "type": "Past Perfect Continuous"
+    }
+  ]
+}

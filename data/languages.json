@@ -1,0 +1,10 @@
+{
+  "languages": [
+    { "code": "en", "label": "English", "native": "English" },
+    { "code": "hi", "label": "Hindi", "native": "हिंदी" },
+    { "code": "bn", "label": "Bangla", "native": "বাংলা" },
+    { "code": "ml", "label": "Malayalam", "native": "മലയാളം" },
+    { "code": "te", "label": "Telugu", "native": "తెలుగు" },
+    { "code": "ta", "label": "Tamil", "native": "தமிழ்" }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "difficulty": "easy",
+  "levels": [
+    {
+      "level": 1,
+      "title": "Present Simple Basics",
+      "questions": [
+        {
+          "id": "e1-q1",
+          "type": "mcq",
+          "question": "Choose the correct form: She ___ to school every day.",
+          "options": ["go", "goes", "going", "went"],
+          "correct": 1,
+          "explanation": "With he/she/it, we add 's' or 'es' to the verb in Simple Present."
+        },
+        {
+          "id": "e1-q2",
+          "type": "mcq",
+          "question": "Which sentence is in Simple Present tense?",
+          "options": ["I am eating.", "I eat rice.", "I ate rice.", "I will eat."],
+          "correct": 1,
+          "explanation": "Simple Present uses the base form of the verb (V1)."
+        },
+        {
+          "id": "e1-q3",
+          "type": "correction",
+          "question": "Fix this sentence: He go to office daily.",
+          "incorrect": "He go to office daily.",
+          "correct": "He goes to office daily.",
+          "explanation": "With 'he', we need 'goes' (add 'es' to 'go')."
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "title": "Past Simple Basics",
+      "questions": [
+        {
+          "id": "e2-q1",
+          "type": "mcq",
+          "question": "Choose the correct form: Yesterday, I ___ a movie.",
+          "options": ["watch", "watches", "watched", "watching"],
+          "correct": 2,
+          "explanation": "Simple Past uses V2 form. 'watch' becomes 'watched'."
+        },
+        {
+          "id": "e2-q2",
+          "type": "mcq",
+          "question": "What is the past tense of 'eat'?",
+          "options": ["eated", "ate", "eaten", "eating"],
+          "correct": 1,
+          "explanation": "'Eat' is an irregular verb. Its past form is 'ate'."
+        },
+        {
+          "id": "e2-q3",
+          "type": "correction",
+          "question": "Fix this sentence: She goed to market.",
+          "incorrect": "She goed to market.",
+          "correct": "She went to market.",
+          "explanation": "'Go' is irregular. Its past form is 'went', not 'goed'."
+        }
+      ]
+    }
+  ]
+}

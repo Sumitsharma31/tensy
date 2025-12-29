@@ -1,0 +1,68 @@
+{
+  "tips": [
+    {
+      "id": "tip-001",
+      "title": "The Time Travel Rule",
+      "description": "Think of tenses as time travel! Past is behind you, Present is now, Future is ahead.",
+      "tense": "all",
+      "difficulty": "easy",
+      "emoji": "⏰"
+    },
+    {
+      "id": "tip-002",
+      "title": "The '-ed' Magic",
+      "description": "Most regular verbs in Simple Past add '-ed': walk → walked, play → played",
+      "tense": "past",
+      "difficulty": "easy",
+      "emoji": "✨"
+    },
+    {
+      "id": "tip-003",
+      "title": "The '-ing' Signal",
+      "description": "When you see '-ing' with is/am/are, it's Present Continuous. With was/were, it's Past Continuous!",
+      "tense": "all",
+      "difficulty": "easy",
+      "emoji": "🎯"
+    },
+    {
+      "id": "tip-004",
+      "title": "Will Power",
+      "description": "'Will' always signals future tense. It's your crystal ball word!",
+      "tense": "future",
+      "difficulty": "easy",
+      "emoji": "🔮"
+    },
+    {
+      "id": "tip-005",
+      "title": "The Perfect has 'Have'",
+      "description": "Perfect tenses always use 'have/has/had'. Has = he/she/it, Have = I/you/we/they",
+      "tense": "all",
+      "difficulty": "medium",
+      "emoji": "💯"
+    },
+    {
+      "id": "tip-006",
+      "title": "Subject-Verb Agreement",
+      "description": "In Simple Present: He/She/It takes 's' or 'es' (walks, goes). I/You/We/They don't (walk, go)",
+      "tense": "present",
+      "difficulty": "medium",
+      "emoji": "🤝"
+    },
+    {
+      "id": "tip-007",
+      "title": "The Before-Before Rule",
+      "description": "Past Perfect = action completed BEFORE another past action. Think 'before the before'!",
+      "tense": "past",
+      "difficulty": "hard",
+      "emoji": "⏪"
+    },
+    {
+      "id": "tip-008",
+      "title": "Continuous = Ongoing",
+      "description": "All continuous tenses show ongoing/progressive action. Look for 'be' + '-ing'",
+      "tense": "all",
+      "difficulty": "medium",
+      "emoji": "🔄"
+    }
+  ]
+}

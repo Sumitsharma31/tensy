@@ -1,0 +1,90 @@
+{
+  "tense": "future",
+  "types": [
+    {
+      "name": "Simple Future",
+      "formula": "Subject + will + V1 + Object",
+      "usage": "Actions that will happen"
+    },
+    {
+      "name": "Future Continuous",
+      "formula": "Subject + will be + V1+ing + Object",
+      "usage": "Ongoing actions in the future"
+    },
+    {
+      "name": "Future Perfect",
+      "formula": "Subject + will have + V3 + Object",
+      "usage": "Actions completed before a future time"
+    },
+    {
+      "name": "Future Perfect Continuous",
+      "formula": "Subject + will have been + V1+ing + Object",
+      "usage": "Duration of action up to a future point"
+    }
+  ],
+  "sentences": [
+    {
+      "id": "fu-001",
+      "difficulty": "easy",
+      "nativeLanguage": "hi",
+      "nativeText": "मैं कल जाऊँगा।",
+      "englishText": "I will go tomorrow.",
+      "formula": "Subject + will + V1 + Time",
+      "type": "Simple Future"
+    },
+    {
+      "id": "fu-002",
+      "difficulty": "easy",
+      "nativeLanguage": "en",
+      "nativeText": "She will help you.",
+      "englishText": "She will help you.",
+      "formula": "Subject + will + V1 + Object",
+      "type": "Simple Future"
+    },
+    {
+      "id": "fu-003",
+      "difficulty": "easy",
+      "nativeLanguage": "hi",
+      "nativeText": "वे खेलेंगे।",
+      "englishText": "They will play.",
+      "formula": "Subject + will + V1",
+      "type": "Simple Future"
+    },
+    {
+      "id": "fu-004",
+      "difficulty": "medium",
+      "nativeLanguage": "hi",
+      "nativeText": "इस समय कल वह पढ़ रहा होगा।",
+      "englishText": "He will be studying at this time tomorrow.",
+      "formula": "Subject + will be + V1+ing + Time",
+      "type": "Future Continuous"
+    },
+    {
+      "id": "fu-005",
+      "difficulty": "medium",
+      "nativeLanguage": "en",
+      "nativeText": "We will be traveling next week.",
+      "englishText": "We will be traveling next week.",
+      "formula": "Subject + will be + V1+ing + Time",
+      "type": "Future Continuous"
+    },
+    {
+      "id": "fu-006",
+      "difficulty": "hard",
+      "nativeLanguage": "hi",
+      "nativeText": "अगले साल तक मैं अपनी पढ़ाई पूरी कर चुका हूँगा।",
+      "englishText": "I will have completed my studies by next year.",
+      "formula": "Subject + will have + V3 + by + Time",
+      "type": "Future Perfect"
+    },
+    {
+      "id": "fu-007",
+      "difficulty": "hard",
+      "nativeLanguage": "en",
+      "nativeText": "By 2030, I will have been working here for 10 years.",
+      "englishText": "By 2030, I will have been working here for 10 years.",
+      "formula": "By + Time + Subject + will have been + V1+ing",
+      "type": "Future Perfect Continuous"
+    }
+  ]
+}
