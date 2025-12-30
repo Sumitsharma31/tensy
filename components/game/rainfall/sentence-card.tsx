@@ -21,7 +21,7 @@ export function SentenceCard({ sentence, nextWordIndex, borderClass, className }
             <span
               key={index}
               className={cn(
-                "mx-1",
+                "mx-1 wrap-break-word",
                 index < nextWordIndex && "line-through opacity-50",
                 index === nextWordIndex && "font-bold text-present",
               )}

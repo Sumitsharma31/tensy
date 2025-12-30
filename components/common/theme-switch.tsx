@@ -6,7 +6,7 @@ import { Moon, Sun } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export function ThemeSwitch() {
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -26,9 +26,9 @@ export function ThemeSwitch() {
       variant="ghost"
       size="icon"
       className="h-9 w-9"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
-      {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
       <span className="sr-only">Toggle theme</span>
     </Button>
   )

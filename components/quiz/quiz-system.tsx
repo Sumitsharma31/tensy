@@ -519,16 +519,17 @@ export function QuizSystem() {
                 <RefreshCcw className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 Retry
               </Button>
+              {isPassed && hasNextLevel && (
+                <Button
+                  onClick={nextLevel}
+                  className="flex-1 sm:flex-initial gap-1.5 text-xs sm:text-sm h-8 sm:h-9"
+                  size="sm"
+                >
+                  Next
+                  <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                </Button>
+              )}
             </div>
-            {isPassed && hasNextLevel && (
-              <Button
-                onClick={nextLevel}
-                className="w-full sm:flex-1 gap-1.5 h-9 sm:h-9 text-sm"
-              >
-                Next Level
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Button>
-            )}
           </CardFooter>
         </Card>
       </div>
@@ -549,7 +550,7 @@ export function QuizSystem() {
     return (
       <div className="space-y-6">
         {/* Header Stats */}
-        <Card className="border bg-gradient-to-r from-muted/50 to-muted/30">
+        <Card className="border bg-gradient-to-r from-muted/50 to-muted/30 p-1">
           <CardContent className="py-2.5 sm:py-3 px-3 sm:px-4">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">

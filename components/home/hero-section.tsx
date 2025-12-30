@@ -61,18 +61,18 @@ export function HeroSection() {
             of all ages and skill levels.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row gap-3 mb-12">
             <Link href="/playground">
-              <Button size="lg" className="gap-2 h-14 px-8 text-lg rounded-2xl bg-primary hover:bg-primary/90">
+              <Button size="sm" className="gap-2 h-10 pl-5 pr-4 text-sm rounded-xl bg-primary hover:bg-primary/90">
                 Play with Tenses
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link href="/quiz">
               <Button
                 variant="outline"
-                size="lg"
-                className="gap-2 h-14 px-8 text-lg rounded-2xl border-2 hover:bg-secondary bg-transparent"
+                size="sm"
+                className="gap-2 h-10 px-4 text-sm rounded-xl border-2 hover:bg-secondary bg-transparent"
               >
                 Take a Quiz
               </Button>

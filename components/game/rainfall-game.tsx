@@ -591,7 +591,7 @@ export function RainfallGame() {
           wrongCount={wrongCount}
         />
 
-        <SentenceCard sentence={currentSentence} nextWordIndex={nextWordIndex} borderClass={colors.border} />
+        <SentenceCard sentence={currentSentence} nextWordIndex={nextWordIndex} borderClass={colors.border} className="lg:block md:block hidden" />
 
         <SelectedWordsCard
           words={selectedWords}
@@ -601,7 +601,7 @@ export function RainfallGame() {
         />
       </div>
 
-      <div className={cn(isFullscreen ? "" : "space-y-6", isFullscreen && "relative h-full")}>
+      <div className={cn(isFullscreen ? "" : "space-y-6", isFullscreen && "relative h-full flex flex-col")}>
         {isFullscreen && (
           <Button
             variant="secondary"
@@ -621,6 +621,13 @@ export function RainfallGame() {
 
         {isFullscreen && isSidebarOpen && (
           <div className="lg:hidden md:hidden fixed inset-0 bg-black/50 z-10" onClick={() => setIsSidebarOpen(false)} />
+        )}
+
+        {/* Sentence Card at top in fullscreen on mobile */}
+        {isFullscreen && (
+          <div className="lg:hidden md:hidden pt-14 pb-2 px-2">
+            <SentenceCard sentence={currentSentence} nextWordIndex={nextWordIndex} borderClass={colors.border} />
+          </div>
         )}
 
         <GameArea

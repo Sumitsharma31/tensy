@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Minimize, Play } from "lucide-react"
-import { MobileSentenceBar } from "./mobile-sentence-bar"
 import { type GameSentence } from "./types"
 import { type PointerEvent, type RefObject } from "react"
 
@@ -56,10 +55,6 @@ export function GameArea({
               <Minimize className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Exit Fullscreen</span>
             </Button>
-          )}
-
-          {isFullscreen && (
-            <MobileSentenceBar sentence={sentence} nextWordIndex={nextWordIndex} borderClass={borderClass} />
           )}
 
           <canvas
