@@ -45,7 +45,12 @@ export function RainfallGame() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const { language } = useLanguage()
-  const { recordRainfallScore, recordPerfectScore } = useChallenges()
+  const { recordRainfallScore, recordPerfectScore, recordSectionVisit } = useChallenges()
+
+  // Track section visit for Explorer badge
+  useEffect(() => {
+    recordSectionVisit("rainfall")
+  }, [recordSectionVisit])
 
   const gameAreaRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)

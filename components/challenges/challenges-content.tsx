@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress"
 import { useStreakContext } from "@/components/providers/streak-provider"
 import { useChallenges } from "@/hooks/use-challenges"
 import { cn } from "@/lib/utils"
-import { Flame, Calendar, Trophy, Target, Clock, Star, Award, Zap, CheckCircle, Coins } from "lucide-react"
+import { Flame, Calendar, Trophy, Target, Clock, Star, Award, Zap, CheckCircle, Coins, Compass, Hammer, Droplets, Languages, Medal, Crown, Sparkles } from "lucide-react"
 import Link from "next/link"
 
 const challengeIcons = {
@@ -17,13 +17,28 @@ const challengeIcons = {
 }
 
 const badgeIcons: Record<string, typeof Star> = {
+  // Starter badges
   "first-steps": Star,
   "quick-learner": Zap,
-  "grammar-guru": Award,
+  // Streak badges
+  "dedicated-learner": Calendar,
   "streak-master": Flame,
+  // Activity badges
+  "builder-pro": Hammer,
+  "rainfall-champion": Droplets,
+  "translator": Languages,
+  "century-club": Medal,
+  // Mastery badges
+  "grammar-guru": Award,
   "perfect-score": CheckCircle,
   "time-traveler": Clock,
+  // Special badges
+  "explorer": Compass,
+  "weekly-warrior": Crown,
+  "xp-hunter": Sparkles,
 }
+
+import { useEffect } from "react"
 
 export function ChallengesContent() {
   const { currentStreak, longestStreak, totalDays, recordActivity } = useStreakContext()
@@ -36,16 +51,35 @@ export function ChallengesContent() {
     getWeeklyChallenges,
     getBadges,
     recordStreakMaster,
+    recordSectionVisit,
+    recordWeeklyComplete,
   } = useChallenges()
 
-  // Check for streak master badge
-  if (currentStreak >= 30) {
-    recordStreakMaster(currentStreak)
-  }
+  // Track section visit for Explorer badge
+  useEffect(() => {
+    if (isLoaded) {
+      recordSectionVisit("challenges")
+    }
+  }, [isLoaded, recordSectionVisit])
+
+  // Check for streak badges
+  useEffect(() => {
+    if (currentStreak >= 7) {
+      recordStreakMaster(currentStreak)
+    }
+  }, [currentStreak, recordStreakMaster])
 
   const dailyChallenges = getDailyChallenges()
   const weeklyChallenges = getWeeklyChallenges(currentStreak)
   const badges = getBadges()
+
+  // Check if all weekly challenges are complete for Weekly Warrior badge
+  useEffect(() => {
+    const allWeeklyComplete = weeklyChallenges.every(c => c.completed)
+    if (allWeeklyComplete && weeklyChallenges.length > 0) {
+      recordWeeklyComplete()
+    }
+  }, [weeklyChallenges, recordWeeklyComplete])
 
   if (!isLoaded) {
     return (
@@ -216,9 +250,12 @@ export function ChallengesContent() {
         <div className="flex items-center gap-2 mb-4">
           <Award className="h-5 w-5 text-past" />
           <h2 className="text-xl font-bold">Badges</h2>
+          <Badge variant="secondary" className="ml-auto">
+            {badges.filter(b => b.earned).length}/{badges.length} Earned
+          </Badge>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {badges.map((badge) => {
             const IconComponent = badgeIcons[badge.id] || Star
             return (

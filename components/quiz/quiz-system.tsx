@@ -150,7 +150,12 @@ export function QuizSystem() {
   const [totalQuestions, setTotalQuestions] = useState( 0 )
   const [wrongAnswers, setWrongAnswers] = useState<WrongAnswer[]>( [] )
 
-  const { recordQuizQuestion, recordTenseCompleted, recordPerfectScore } = useChallenges()
+  const { recordQuizQuestion, recordTenseCompleted, recordPerfectScore, recordSectionVisit, recordEasyLevelComplete } = useChallenges()
+
+  // Track section visit for Explorer badge
+  useEffect( () => {
+    recordSectionVisit("quiz")
+  }, [recordSectionVisit] )
 
   useEffect( () => {
     try {
@@ -269,9 +274,14 @@ export function QuizSystem() {
         recordPerfectScore()
       }
 
+      // Record easy level completion for Grammar Guru badge
+      if ( difficulty === "easy" && percentage >= 70 && level.title ) {
+        recordEasyLevelComplete( level.title )
+      }
+
       setView( "result" )
     }
-  }, [currentQuestion, level, currentLevel, difficulty, completedLevels, saveCompletedLevels, score, question, selectedAnswer, recordTenseCompleted, recordPerfectScore] )
+  }, [currentQuestion, level, currentLevel, difficulty, completedLevels, saveCompletedLevels, score, question, selectedAnswer, recordTenseCompleted, recordPerfectScore, recordEasyLevelComplete] )
 
   const startLevel = ( levelNum: number ) => {
     if ( !isLevelUnlocked( levelNum ) ) return
