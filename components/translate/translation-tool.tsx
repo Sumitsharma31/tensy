@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AudioButton } from "@/components/common/audio-button"
 import { cn } from "@/lib/utils"
+import { useChallenges } from "@/hooks/use-challenges"
 import { ArrowRight, Languages, BookOpen, Sparkles, Copy, Check } from "lucide-react"
 
 const languages = [
@@ -89,6 +90,13 @@ export function TranslationTool() {
   const [copied, setCopied] = useState(false)
   const [isTranslating, setIsTranslating] = useState(false)
 
+  const { recordTranslation, recordSectionVisit } = useChallenges()
+
+  // Track section visit for Explorer badge
+  useEffect(() => {
+    recordSectionVisit("translate")
+  }, [recordSectionVisit])
+
   const handleTranslate = () => {
     setIsTranslating(true)
 
@@ -113,6 +121,10 @@ export function TranslationTool() {
           ],
         })
       }
+      
+      // Record translation for Translator badge
+      recordTranslation()
+      
       setIsTranslating(false)
     }, 500)
   }

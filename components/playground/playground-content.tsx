@@ -9,6 +9,7 @@ import { TenseTimeline } from "@/components/tense/tense-timeline"
 import { FormulaCard } from "@/components/tense/formula-card"
 import { ExampleList } from "@/components/tense/example-list"
 import { DifficultyTabs } from "@/components/common/difficulty-tabs"
+import { useChallenges } from "@/hooks/use-challenges"
 import { Search, BookOpen, FlaskConical, PenLine, Volume2, RefreshCw } from "lucide-react"
 import type { Difficulty } from "@/lib/difficulty-styles"
 import { getDifficultyStyles } from "@/lib/difficulty-styles"
@@ -225,6 +226,12 @@ export function PlaygroundContent() {
   const [activeTense, setActiveTense] = useState<"past" | "present" | "future">("present")
   const [difficulty, setDifficulty] = useState<Difficulty>("easy")
   const [searchQuery, setSearchQuery] = useState("")
+  const { recordSectionVisit } = useChallenges()
+
+  // Track section visit for Explorer badge
+  useEffect(() => {
+    recordSectionVisit("playground")
+  }, [recordSectionVisit])
 
   const styles = getDifficultyStyles(difficulty)
   const currentTense = tenseData[activeTense]

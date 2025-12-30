@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
+import { useChallenges } from "@/hooks/use-challenges"
 import { Lightbulb, Clock, CheckCircle, ArrowRight, Sparkles, Zap, Target, BookOpen } from "lucide-react"
 
 const tips = [
@@ -117,6 +118,12 @@ const tenseFormulas = {
 
 export function TipsContent() {
   const [selectedTense, setSelectedTense] = useState<"all" | "past" | "present" | "future">("all")
+  const { recordSectionVisit } = useChallenges()
+
+  // Track section visit for Explorer badge
+  useEffect(() => {
+    recordSectionVisit("tips")
+  }, [recordSectionVisit])
 
   const filteredTips =
     selectedTense === "all" ? tips : tips.filter((t) => t.tense === "all" || t.tense === selectedTense)

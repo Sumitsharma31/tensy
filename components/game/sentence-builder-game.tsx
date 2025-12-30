@@ -52,7 +52,12 @@ export function SentenceBuilderGame() {
   const [currentSentences, setCurrentSentences] = useState<SentenceEntry[]>(() => selectRandomSentences("easy"))
   const [showScoreboard, setShowScoreboard] = useState(false)
   const { language } = useLanguage()
-  const { recordSentenceBuilt, recordPerfectScore } = useChallenges()
+  const { recordSentenceBuilt, recordPerfectScore, recordSectionVisit } = useChallenges()
+
+  // Track section visit for Explorer badge
+  useEffect(() => {
+    recordSectionVisit("builder")
+  }, [recordSectionVisit])
 
   const currentSentence = currentSentences[currentIndex]
   const englishSentence = currentSentence.translations.en

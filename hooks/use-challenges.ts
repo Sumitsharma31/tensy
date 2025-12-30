@@ -45,7 +45,16 @@ interface ChallengesData {
   weeklyChallenges: {
     tensesCompleted: string[]
     perfectScoreAchieved: boolean
+    weeklyCompleted: boolean
     lastReset: string
+  }
+  lifetimeStats: {
+    totalQuizQuestions: number
+    totalSentencesBuilt: number
+    totalTranslations: number
+    highestRainfallScore: number
+    sectionsVisited: string[]
+    easyLevelsCompleted: string[]
   }
   badges: Record<string, { earned: boolean; earnedDate?: string }>
   totalXP: number
@@ -61,7 +70,16 @@ const getDefaultData = (): ChallengesData => ({
   weeklyChallenges: {
     tensesCompleted: [],
     perfectScoreAchieved: false,
+    weeklyCompleted: false,
     lastReset: getWeekStart(),
+  },
+  lifetimeStats: {
+    totalQuizQuestions: 0,
+    totalSentencesBuilt: 0,
+    totalTranslations: 0,
+    highestRainfallScore: 0,
+    sectionsVisited: [],
+    easyLevelsCompleted: [],
   },
   badges: {},
   totalXP: 0,
@@ -115,7 +133,20 @@ export function useChallenges() {
           parsed.weeklyChallenges = {
             tensesCompleted: [],
             perfectScoreAchieved: false,
+            weeklyCompleted: false,
             lastReset: weekStart,
+          }
+        }
+
+        // Ensure lifetimeStats exists for older data
+        if (!parsed.lifetimeStats) {
+          parsed.lifetimeStats = {
+            totalQuizQuestions: 0,
+            totalSentencesBuilt: 0,
+            totalTranslations: 0,
+            highestRainfallScore: 0,
+            sectionsVisited: [],
+            easyLevelsCompleted: [],
           }
         }
 
@@ -137,14 +168,31 @@ export function useChallenges() {
     }
   }, [])
 
+  // Helper to check and award XP milestone badges
+  const checkXPBadges = useCallback((newData: ChallengesData) => {
+    // XP Hunter badge - earn 1000 total XP
+    if (newData.totalXP >= 1000 && !newData.badges["xp-hunter"]) {
+      newData.badges["xp-hunter"] = {
+        earned: true,
+        earnedDate: new Date().toISOString(),
+      }
+      newData.totalXP += 100
+    }
+  }, [])
+
   // Record a correct quiz question
   const recordQuizQuestion = useCallback(() => {
     setData((prev) => {
+      const totalQuestions = (prev.lifetimeStats?.totalQuizQuestions || 0) + 1
       const newData = {
         ...prev,
         dailyChallenges: {
           ...prev.dailyChallenges,
           quizQuestionsCorrect: prev.dailyChallenges.quizQuestionsCorrect + 1,
+        },
+        lifetimeStats: {
+          ...prev.lifetimeStats,
+          totalQuizQuestions: totalQuestions,
         },
       }
       
@@ -157,27 +205,52 @@ export function useChallenges() {
         newData.totalXP += 25
       }
 
+      // Century Club badge - answer 100 quiz questions
+      if (totalQuestions >= 100 && !newData.badges["century-club"]) {
+        newData.badges["century-club"] = {
+          earned: true,
+          earnedDate: new Date().toISOString(),
+        }
+        newData.totalXP += 150
+      }
+
       // Award XP for completing daily challenge
       if (newData.dailyChallenges.quizQuestionsCorrect === 3 && prev.dailyChallenges.quizQuestionsCorrect < 3) {
         newData.totalXP += 50
       }
+
+      checkXPBadges(newData)
 
       try {
         localStorage.setItem(CHALLENGES_KEY, JSON.stringify(newData))
       } catch {}
       return newData
     })
-  }, [])
+  }, [checkXPBadges])
 
   // Record a completed sentence build
   const recordSentenceBuilt = useCallback(() => {
     setData((prev) => {
+      const totalSentences = (prev.lifetimeStats?.totalSentencesBuilt || 0) + 1
       const newData = {
         ...prev,
         dailyChallenges: {
           ...prev.dailyChallenges,
           sentencesBuilt: prev.dailyChallenges.sentencesBuilt + 1,
         },
+        lifetimeStats: {
+          ...prev.lifetimeStats,
+          totalSentencesBuilt: totalSentences,
+        },
+      }
+
+      // Builder Pro badge - build 50 sentences total
+      if (totalSentences >= 50 && !newData.badges["builder-pro"]) {
+        newData.badges["builder-pro"] = {
+          earned: true,
+          earnedDate: new Date().toISOString(),
+        }
+        newData.totalXP += 100
       }
 
       // Award XP for completing daily challenge
@@ -185,22 +258,38 @@ export function useChallenges() {
         newData.totalXP += 75
       }
 
+      checkXPBadges(newData)
+
       try {
         localStorage.setItem(CHALLENGES_KEY, JSON.stringify(newData))
       } catch {}
       return newData
     })
-  }, [])
+  }, [checkXPBadges])
 
   // Record rainfall game score
   const recordRainfallScore = useCallback((score: number) => {
     setData((prev) => {
+      const highestScore = Math.max(prev.lifetimeStats?.highestRainfallScore || 0, score)
       const newData = {
         ...prev,
         dailyChallenges: {
           ...prev.dailyChallenges,
           rainfallHighScore: Math.max(prev.dailyChallenges.rainfallHighScore, score),
         },
+        lifetimeStats: {
+          ...prev.lifetimeStats,
+          highestRainfallScore: highestScore,
+        },
+      }
+
+      // Rainfall Champion badge - score 500+ in Rainfall
+      if (highestScore >= 500 && !newData.badges["rainfall-champion"]) {
+        newData.badges["rainfall-champion"] = {
+          earned: true,
+          earnedDate: new Date().toISOString(),
+        }
+        newData.totalXP += 150
       }
 
       // Award XP for completing daily challenge (first time reaching 100)
@@ -208,12 +297,14 @@ export function useChallenges() {
         newData.totalXP += 100
       }
 
+      checkXPBadges(newData)
+
       try {
         localStorage.setItem(CHALLENGES_KEY, JSON.stringify(newData))
       } catch {}
       return newData
     })
-  }, [])
+  }, [checkXPBadges])
 
   // Record tense completion for weekly challenge
   const recordTenseCompleted = useCallback((tenseName: string) => {
@@ -307,24 +398,179 @@ export function useChallenges() {
   // Award streak master badge
   const recordStreakMaster = useCallback((streak: number) => {
     setData((prev) => {
-      if (streak >= 30 && !prev.badges["streak-master"]) {
-        const newData = {
-          ...prev,
+      let newData = { ...prev }
+      let changed = false
+
+      // Dedicated Learner badge - 7-day streak
+      if (streak >= 7 && !prev.badges["dedicated-learner"]) {
+        newData = {
+          ...newData,
           badges: {
-            ...prev.badges,
+            ...newData.badges,
+            "dedicated-learner": {
+              earned: true,
+              earnedDate: new Date().toISOString(),
+            },
+          },
+          totalXP: newData.totalXP + 75,
+        }
+        changed = true
+      }
+
+      // Streak Master badge - 30-day streak
+      if (streak >= 30 && !prev.badges["streak-master"]) {
+        newData = {
+          ...newData,
+          badges: {
+            ...newData.badges,
             "streak-master": {
               earned: true,
               earnedDate: new Date().toISOString(),
             },
           },
-          totalXP: prev.totalXP + 200,
+          totalXP: newData.totalXP + 200,
         }
+        changed = true
+      }
+
+      if (changed) {
         try {
           localStorage.setItem(CHALLENGES_KEY, JSON.stringify(newData))
         } catch {}
         return newData
       }
       return prev
+    })
+  }, [])
+
+  // Record translation completed
+  const recordTranslation = useCallback(() => {
+    setData((prev) => {
+      const totalTranslations = (prev.lifetimeStats?.totalTranslations || 0) + 1
+      const newData = {
+        ...prev,
+        lifetimeStats: {
+          ...prev.lifetimeStats,
+          totalTranslations: totalTranslations,
+        },
+      }
+
+      // Translator badge - translate 20 sentences
+      if (totalTranslations >= 20 && !newData.badges["translator"]) {
+        newData.badges["translator"] = {
+          earned: true,
+          earnedDate: new Date().toISOString(),
+        }
+        newData.totalXP += 100
+      }
+
+      checkXPBadges(newData)
+
+      try {
+        localStorage.setItem(CHALLENGES_KEY, JSON.stringify(newData))
+      } catch {}
+      return newData
+    })
+  }, [checkXPBadges])
+
+  // Record section visited for Explorer badge
+  const recordSectionVisit = useCallback((section: string) => {
+    setData((prev) => {
+      const currentVisited = prev.lifetimeStats?.sectionsVisited || []
+      if (currentVisited.includes(section)) {
+        return prev
+      }
+
+      const newVisited = [...currentVisited, section]
+      const newData = {
+        ...prev,
+        lifetimeStats: {
+          ...prev.lifetimeStats,
+          sectionsVisited: newVisited,
+        },
+      }
+
+      // All main sections: quiz, builder, rainfall, translate, tips, search, playground, challenges
+      const allSections = ["quiz", "builder", "rainfall", "translate", "tips", "search", "playground", "challenges"]
+      const visitedAllSections = allSections.every(s => newVisited.includes(s))
+
+      // Explorer badge - visit all sections
+      if (visitedAllSections && !newData.badges["explorer"]) {
+        newData.badges["explorer"] = {
+          earned: true,
+          earnedDate: new Date().toISOString(),
+        }
+        newData.totalXP += 100
+      }
+
+      try {
+        localStorage.setItem(CHALLENGES_KEY, JSON.stringify(newData))
+      } catch {}
+      return newData
+    })
+  }, [])
+
+  // Record easy level completion for Grammar Guru badge
+  const recordEasyLevelComplete = useCallback((tense: string) => {
+    setData((prev) => {
+      const currentCompleted = prev.lifetimeStats?.easyLevelsCompleted || []
+      if (currentCompleted.includes(tense)) {
+        return prev
+      }
+
+      const newCompleted = [...currentCompleted, tense]
+      const newData = {
+        ...prev,
+        lifetimeStats: {
+          ...prev.lifetimeStats,
+          easyLevelsCompleted: newCompleted,
+        },
+      }
+
+      // Grammar Guru badge - complete all 12 easy levels
+      if (newCompleted.length >= 12 && !newData.badges["grammar-guru"]) {
+        newData.badges["grammar-guru"] = {
+          earned: true,
+          earnedDate: new Date().toISOString(),
+        }
+        newData.totalXP += 200
+      }
+
+      try {
+        localStorage.setItem(CHALLENGES_KEY, JSON.stringify(newData))
+      } catch {}
+      return newData
+    })
+  }, [])
+
+  // Record weekly challenges completion for Weekly Warrior badge
+  const recordWeeklyComplete = useCallback(() => {
+    setData((prev) => {
+      if (prev.weeklyChallenges.weeklyCompleted) {
+        return prev
+      }
+
+      const newData = {
+        ...prev,
+        weeklyChallenges: {
+          ...prev.weeklyChallenges,
+          weeklyCompleted: true,
+        },
+      }
+
+      // Weekly Warrior badge
+      if (!newData.badges["weekly-warrior"]) {
+        newData.badges["weekly-warrior"] = {
+          earned: true,
+          earnedDate: new Date().toISOString(),
+        }
+        newData.totalXP += 250
+      }
+
+      try {
+        localStorage.setItem(CHALLENGES_KEY, JSON.stringify(newData))
+      } catch {}
+      return newData
     })
   }, [])
 
@@ -406,12 +652,25 @@ export function useChallenges() {
   // Get badges with earned status
   const getBadges = useCallback((): Badge[] => {
     const badgeDefinitions = [
+      // Starter badges
       { id: "first-steps", name: "First Steps", description: "Complete your first lesson" },
       { id: "quick-learner", name: "Quick Learner", description: "Complete 10 lessons" },
-      { id: "grammar-guru", name: "Grammar Guru", description: "Complete all easy levels" },
+      // Streak badges
+      { id: "dedicated-learner", name: "Dedicated Learner", description: "Maintain a 7-day streak" },
       { id: "streak-master", name: "Streak Master", description: "Maintain a 30-day streak" },
+      // Activity badges
+      { id: "builder-pro", name: "Builder Pro", description: "Build 50 sentences" },
+      { id: "rainfall-champion", name: "Rainfall Champion", description: "Score 500+ in Word Rainfall" },
+      { id: "translator", name: "Translator", description: "Translate 20 sentences" },
+      { id: "century-club", name: "Century Club", description: "Answer 100 quiz questions" },
+      // Mastery badges
+      { id: "grammar-guru", name: "Grammar Guru", description: "Complete all easy levels" },
       { id: "perfect-score", name: "Perfect Score", description: "Get 100% in any quiz" },
       { id: "time-traveler", name: "Time Traveler", description: "Master all 12 tenses" },
+      // Special badges
+      { id: "explorer", name: "Explorer", description: "Visit all app sections" },
+      { id: "weekly-warrior", name: "Weekly Warrior", description: "Complete all weekly challenges" },
+      { id: "xp-hunter", name: "XP Hunter", description: "Earn 1000 total XP" },
     ]
 
     return badgeDefinitions.map((badge) => ({
@@ -424,6 +683,7 @@ export function useChallenges() {
   return {
     isLoaded,
     totalXP: data.totalXP,
+    lifetimeStats: data.lifetimeStats,
     hoursUntilDailyReset: getHoursUntilMidnight(),
     daysUntilWeeklyReset: getDaysUntilWeekEnd(),
     getDailyChallenges,
@@ -436,5 +696,9 @@ export function useChallenges() {
     recordPerfectScore,
     recordLessonComplete,
     recordStreakMaster,
+    recordTranslation,
+    recordSectionVisit,
+    recordEasyLevelComplete,
+    recordWeeklyComplete,
   }
 }

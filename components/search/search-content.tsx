@@ -2,11 +2,12 @@
 
 import type React from "react"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Search, Clock, BookOpen, Gamepad2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useChallenges } from "@/hooks/use-challenges"
 import Link from "next/link"
 
 const searchableContent = [
@@ -93,6 +94,12 @@ const categoryIcons: Record<string, React.ReactNode> = {
 
 export function SearchContent() {
   const [query, setQuery] = useState("")
+  const { recordSectionVisit } = useChallenges()
+
+  // Track section visit for Explorer badge
+  useEffect(() => {
+    recordSectionVisit("search")
+  }, [recordSectionVisit])
 
   const results = useMemo(() => {
     if (!query.trim()) return searchableContent

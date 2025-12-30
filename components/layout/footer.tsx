@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { BookOpen, Heart } from "lucide-react"
+import { BookOpen, Github, Heart } from "lucide-react"
 
 export function Footer() {
   return (
@@ -78,10 +78,22 @@ export function Footer() {
         </div>
 
         <div className="mt-8 pt-8 border-t flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© 2025 Tense Playground. All rights reserved.</p>
-          <p className="flex items-center gap-1">
-            Made with <Heart className="h-4 w-4 text-destructive fill-destructive" /> for learners
-          </p>
+          <p>© {new Date().getFullYear()} Tense Playground. All rights reserved.</p>
+          <div className="flex items-center gap-2">
+            <p className="flex items-center gap-1">
+              Made with <Heart className="h-4 w-4 text-destructive fill-destructive" aria-hidden="true" /> for learners
+            </p>
+            <Link 
+              href="https://github.com/dharam-gfx" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
+              title="Developed by dharam-gfx"
+              aria-label="GitHub profile of dharam-gfx"
+            >
+              <Github className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
