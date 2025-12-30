@@ -78,7 +78,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 pt-8 border-t flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© 2025 Tense Grammar Playground. All rights reserved.</p>
+          <p>© 2025 Tense Playground. All rights reserved.</p>
           <p className="flex items-center gap-1">
             Made with <Heart className="h-4 w-4 text-destructive fill-destructive" /> for learners
           </p>

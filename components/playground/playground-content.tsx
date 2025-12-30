@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
@@ -9,9 +9,68 @@ import { TenseTimeline } from "@/components/tense/tense-timeline"
 import { FormulaCard } from "@/components/tense/formula-card"
 import { ExampleList } from "@/components/tense/example-list"
 import { DifficultyTabs } from "@/components/common/difficulty-tabs"
-import { Search, BookOpen, FlaskConical, PenLine, Volume2 } from "lucide-react"
+import { Search, BookOpen, FlaskConical, PenLine, Volume2, RefreshCw } from "lucide-react"
 import type { Difficulty } from "@/lib/difficulty-styles"
 import { getDifficultyStyles } from "@/lib/difficulty-styles"
+import { cancelSpeech, speakText } from "@/lib/speech"
+
+// Import sentence data
+import easySentences from "@/data/sentence/easy.json"
+import mediumSentences from "@/data/sentence/medium.json"
+import hardSentences from "@/data/sentence/hard.json"
+
+// Types for sentence data
+interface SentenceQuiz {
+  type: string
+  question: string
+  options: string[]
+  answerIndex: number
+  explanation: string
+}
+
+interface SentenceTense {
+  name: string
+  formula: string
+  usage: string
+}
+
+interface Sentence {
+  id: string
+  title: string
+  learningFocus: string
+  tense: SentenceTense
+  quiz: SentenceQuiz
+  translations: Record<string, string>
+}
+
+interface SentenceData {
+  difficulty: string
+  sentences: Sentence[]
+}
+
+// Helper function to determine tense category from tense name
+function getTenseCategory(tenseName: string): "past" | "present" | "future" | null {
+  const lowerName = tenseName.toLowerCase()
+  if (lowerName.includes("past")) return "past"
+  if (lowerName.includes("future")) return "future"
+  if (lowerName.includes("present")) return "present"
+  // Default present for simple tenses without explicit category
+  return "present"
+}
+
+// Sentence data by difficulty
+const sentenceDataByDifficulty: Record<Difficulty, SentenceData> = {
+  easy: easySentences as SentenceData,
+  medium: mediumSentences as SentenceData,
+  hard: hardSentences as SentenceData,
+}
+
+// Combined sentences from all difficulty levels
+const allSentences: Sentence[] = [
+  ...easySentences.sentences,
+  ...mediumSentences.sentences,
+  ...hardSentences.sentences,
+] as Sentence[]
 
 // Sample tense data
 const tenseData = {
@@ -274,55 +333,110 @@ function PracticeSection({
   const [answer, setAnswer] = useState("")
   const [showResult, setShowResult] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
 
   const speak = (text: string) => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = "en-US"
-      utterance.rate = 0.9
-      utterance.onstart = () => setIsSpeaking(true)
-      utterance.onend = () => setIsSpeaking(false)
-      utterance.onerror = () => setIsSpeaking(false)
-      window.speechSynthesis.speak(utterance)
-    }
+    speakText(text, {
+      rate: 0.9,
+      preferredLangs: ["en-IN", "en-GB", "en-US"],
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+    })
   }
 
-  const questions = {
-    past: {
-      easy: { question: 'Convert to past: "I eat food."', answer: "I ate food." },
-      medium: { question: 'Fill in: "She ___ (read) when I called."', answer: "was reading" },
-      hard: {
-        question: 'Make Past Perfect: "They finish before we arrive."',
-        answer: "They had finished before we arrived.",
-      },
-    },
-    present: {
-      easy: { question: 'Fill in: "She ___ (go) to school daily."', answer: "goes" },
-      medium: { question: 'Convert to Present Continuous: "I study English."', answer: "I am studying English." },
-      hard: {
-        question: 'Make Present Perfect Continuous: "I work here for 5 years."',
-        answer: "I have been working here for 5 years.",
-      },
-    },
-    future: {
-      easy: { question: 'Add "will": "I go tomorrow."', answer: "I will go tomorrow." },
-      medium: {
-        question: 'Make Future Continuous: "She travel next week."',
-        answer: "She will be traveling next week.",
-      },
-      hard: { question: 'Make Future Perfect: "I complete by June."', answer: "I will have completed by June." },
-    },
+  useEffect(() => cancelSpeech, [])
+
+  // Filter sentences by tense category from all combined JSON data
+  const filteredSentences = useMemo(() => {
+    return allSentences.filter((sentence) => {
+      const category = getTenseCategory(sentence.tense.name)
+      return category === tense
+    })
+  }, [tense])
+
+  // Reset question index when tense changes
+  useEffect(() => {
+    setCurrentQuestionIndex(0)
+    setAnswer("")
+    setShowResult(false)
+  }, [tense])
+
+  // Get current question from filtered sentences
+  const currentSentence = filteredSentences[currentQuestionIndex]
+  
+  // Handle case when no sentences match the filter
+  if (!currentSentence) {
+    return (
+      <Card className="border-2">
+        <CardHeader>
+          <CardTitle>Quick Practice</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-center py-8">
+            No practice questions available for {tense} tense at {difficulty} level.
+          </p>
+        </CardContent>
+      </Card>
+    )
   }
 
-  const currentQuestion = questions[tense][difficulty]
+  const currentQuestion = {
+    question: currentSentence.quiz.question,
+    answer: currentSentence.quiz.options[currentSentence.quiz.answerIndex],
+    options: currentSentence.quiz.options,
+    explanation: currentSentence.quiz.explanation,
+    title: currentSentence.title,
+    tenseInfo: currentSentence.tense,
+  }
+
+  const handleNextQuestion = () => {
+    const nextIndex = (currentQuestionIndex + 1) % filteredSentences.length
+    setCurrentQuestionIndex(nextIndex)
+    setAnswer("")
+    setShowResult(false)
+  }
+
+  const isCorrect = answer.toLowerCase().trim() === currentQuestion.answer.toLowerCase()
 
   return (
     <Card className="border-2">
       <CardHeader>
-        <CardTitle>Quick Practice</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Quick Practice</CardTitle>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {currentQuestionIndex + 1} / {filteredSentences.length}
+            </span>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleNextQuestion}
+              title="Next question"
+              className="h-8 w-8"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Tense info badge */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-medium ${
+              tense === "past"
+                ? "bg-past/20 text-past"
+                : tense === "present"
+                  ? "bg-present/20 text-present"
+                  : "bg-future/20 text-future"
+            }`}
+          >
+            {currentQuestion.tenseInfo.name}
+          </span>
+          <span className="text-sm text-muted-foreground">{currentQuestion.title}</span>
+        </div>
+
         <div
           className={`p-4 rounded-xl ${
             tense === "past" ? "bg-past-light" : tense === "present" ? "bg-present-light" : "bg-future-light"
@@ -348,6 +462,10 @@ function PracticeSection({
               <Volume2 className={`h-5 w-5 ${isSpeaking ? "animate-pulse" : ""}`} />
             </Button>
           </div>
+          {/* Formula hint */}
+          <p className="text-sm text-muted-foreground mt-2">
+            Formula: {currentQuestion.tenseInfo.formula}
+          </p>
         </div>
 
         <div className="flex gap-4">
@@ -365,17 +483,20 @@ function PracticeSection({
         {showResult && (
           <div
             className={`p-4 rounded-xl ${
-              answer.toLowerCase().trim() === currentQuestion.answer.toLowerCase()
+              isCorrect
                 ? "bg-present-light border-2 border-present"
                 : "bg-destructive/10 border-2 border-destructive"
             }`}
           >
             <div className="flex items-start justify-between gap-3">
-              <p className="font-medium flex-1">
-                {answer.toLowerCase().trim() === currentQuestion.answer.toLowerCase()
-                  ? "Correct! Well done!"
-                  : `Not quite. The correct answer is: "${currentQuestion.answer}"`}
-              </p>
+              <div className="flex-1 space-y-2">
+                <p className="font-medium">
+                  {isCorrect
+                    ? "Correct! Well done!"
+                    : `Not quite. The correct answer is: "${currentQuestion.answer}"`}
+                </p>
+                <p className="text-sm text-muted-foreground">{currentQuestion.explanation}</p>
+              </div>
               <Button
                 variant="ghost"
                 size="icon"

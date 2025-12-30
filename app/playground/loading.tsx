@@ -1,5 +1,5 @@
-import { LoadingScreen } from "@/components/common/loading-screen"
+import { PlaygroundLoading } from "@/components/common/page-loading"
 
 export default function Loading() {
-  return <LoadingScreen message="Loading Playground" submessage="Fetching tense data..." />
+  return <PlaygroundLoading />
 }

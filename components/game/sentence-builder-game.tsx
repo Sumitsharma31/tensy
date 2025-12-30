@@ -7,89 +7,28 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { DifficultyTabs } from "@/components/common/difficulty-tabs"
 import { AudioButton } from "@/components/common/audio-button"
+import { useLanguage } from "@/components/providers/language-provider"
+import { useChallenges } from "@/hooks/use-challenges"
+import easySentences from "@/data/sentence/easy.json"
+import mediumSentences from "@/data/sentence/medium.json"
+import hardSentences from "@/data/sentence/hard.json"
 import { cn } from "@/lib/utils"
 import { getDifficultyStyles, getDifficultyColors, type Difficulty } from "@/lib/difficulty-styles"
-import { Check, X, RotateCcw, ArrowRight, Trophy, Zap } from "lucide-react"
+import { Check, X, RotateCcw, ArrowRight, Trophy, Zap, RefreshCcw } from "lucide-react"
+type SentenceEntry = (typeof easySentences.sentences)[number]
 
-interface Sentence {
-  id: string
-  native: string
-  english: string
-  words: string[]
+const sentences: Record<Difficulty, SentenceEntry[]> = {
+  easy: easySentences.sentences,
+  medium: mediumSentences.sentences,
+  hard: hardSentences.sentences,
 }
 
-const sentences: Record<Difficulty, Sentence[]> = {
-  easy: [
-    { id: "e1", native: "मैं चाय पीता हूँ।", english: "I drink tea.", words: ["I", "drink", "tea."] },
-    { id: "e2", native: "वह स्कूल जाती है।", english: "She goes to school.", words: ["She", "goes", "to", "school."] },
-    { id: "e3", native: "हम खेलते हैं।", english: "We play games.", words: ["We", "play", "games."] },
-    { id: "e4", native: "वे गाते हैं।", english: "They sing songs.", words: ["They", "sing", "songs."] },
-    { id: "e5", native: "कुत्ता भौंकता है।", english: "The dog barks.", words: ["The", "dog", "barks."] },
-  ],
-  medium: [
-    {
-      id: "m1",
-      native: "मैं अभी पढ़ रहा हूँ।",
-      english: "I am studying now.",
-      words: ["I", "am", "studying", "now."],
-    },
-    {
-      id: "m2",
-      native: "वह कल आएगा।",
-      english: "He will come tomorrow.",
-      words: ["He", "will", "come", "tomorrow."],
-    },
-    {
-      id: "m3",
-      native: "हमने मैच जीता।",
-      english: "We won the match.",
-      words: ["We", "won", "the", "match."],
-    },
-    {
-      id: "m4",
-      native: "वे खाना खा रहे हैं।",
-      english: "They are eating food.",
-      words: ["They", "are", "eating", "food."],
-    },
-    {
-      id: "m5",
-      native: "मैंने किताब पढ़ी।",
-      english: "I have read the book.",
-      words: ["I", "have", "read", "the", "book."],
-    },
-  ],
-  hard: [
-    {
-      id: "h1",
-      native: "अगर वह आता तो मैं उससे मिलता।",
-      english: "If he had come, I would have met him.",
-      words: ["If", "he", "had", "come,", "I", "would", "have", "met", "him."],
-    },
-    {
-      id: "h2",
-      native: "जब तक तुम आओगे, मैं जा चुका हूँगा।",
-      english: "By the time you arrive, I will have left.",
-      words: ["By", "the", "time", "you", "arrive,", "I", "will", "have", "left."],
-    },
-    {
-      id: "h3",
-      native: "वह दो घंटे से इंतज़ार कर रहा था।",
-      english: "He had been waiting for two hours.",
-      words: ["He", "had", "been", "waiting", "for", "two", "hours."],
-    },
-    {
-      id: "h4",
-      native: "मुझे बताया गया था कि वह आ रही है।",
-      english: "I had been told that she was coming.",
-      words: ["I", "had", "been", "told", "that", "she", "was", "coming."],
-    },
-    {
-      id: "h5",
-      native: "2025 तक वह यहाँ 10 साल काम कर चुकी होगी।",
-      english: "By 2025, she will have been working here for 10 years.",
-      words: ["By", "2025,", "she", "will", "have", "been", "working", "here", "for", "10", "years."],
-    },
-  ],
+const QUESTIONS_PER_SESSION = 10
+
+function selectRandomSentences(level: Difficulty) {
+  const pool = sentences[level]
+  const sessionSize = Math.min(QUESTIONS_PER_SESSION, pool.length)
+  return shuffleArray(pool).slice(0, sessionSize)
 }
 
 function shuffleArray<T>(array: T[]): T[] {
@@ -110,21 +49,48 @@ export function SentenceBuilderGame() {
   const [availableWords, setAvailableWords] = useState<string[]>([])
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
   const [showResult, setShowResult] = useState(false)
+  const [currentSentences, setCurrentSentences] = useState<SentenceEntry[]>(() => selectRandomSentences("easy"))
+  const [showScoreboard, setShowScoreboard] = useState(false)
+  const { language } = useLanguage()
+  const { recordSentenceBuilt, recordPerfectScore } = useChallenges()
 
-  const currentSentences = sentences[difficulty]
   const currentSentence = currentSentences[currentIndex]
+  const englishSentence = currentSentence.translations.en
+  const nativeSentence = currentSentence.translations[language as keyof typeof currentSentence.translations] ?? englishSentence
+  const sentenceWords = currentSentence.wordBank
   const progress = ((currentIndex + 1) / currentSentences.length) * 100
+  const pointsPerCorrect = difficulty === "easy" ? 10 : difficulty === "medium" ? 20 : 30
+  const correctAnswers = pointsPerCorrect ? Math.round(score / pointsPerCorrect) : 0
+  const questionCount = currentSentences.length
+  const accuracy = questionCount > 0 ? Math.round((correctAnswers / questionCount) * 100) : 0
 
   const styles = getDifficultyStyles(difficulty)
   const colors = getDifficultyColors(difficulty)
 
+  const startNewSession = useCallback((level: Difficulty) => {
+    const freshSentences = selectRandomSentences(level)
+    setCurrentSentences(freshSentences)
+    setCurrentIndex(0)
+    setScore(0)
+    setStreak(0)
+    setSelectedWords([])
+    setAvailableWords([])
+    setIsCorrect(null)
+    setShowResult(false)
+    setShowScoreboard(false)
+  }, [])
+
   // Initialize available words when sentence changes
   useEffect(() => {
-    setAvailableWords(shuffleArray(currentSentence.words))
+    setAvailableWords(shuffleArray(sentenceWords))
     setSelectedWords([])
     setIsCorrect(null)
     setShowResult(false)
-  }, [currentSentence])
+  }, [currentSentence, sentenceWords])
+
+  useEffect(() => {
+    startNewSession(difficulty)
+  }, [difficulty, startNewSession])
 
   const handleWordSelect = useCallback((word: string, index: number) => {
     setSelectedWords((prev) => [...prev, word])
@@ -144,7 +110,7 @@ export function SentenceBuilderGame() {
 
   const checkAnswer = useCallback(() => {
     const userSentence = selectedWords.join(" ")
-    const correct = userSentence === currentSentence.english
+    const correct = userSentence === englishSentence
 
     setIsCorrect(correct)
     setShowResult(true)
@@ -152,26 +118,37 @@ export function SentenceBuilderGame() {
     if (correct) {
       setScore((prev) => prev + (difficulty === "easy" ? 10 : difficulty === "medium" ? 20 : 30))
       setStreak((prev) => prev + 1)
+      // Record correct sentence for daily challenge
+      recordSentenceBuilt()
     } else {
       setStreak(0)
     }
-  }, [selectedWords, currentSentence, difficulty])
+    if (currentIndex === currentSentences.length - 1) {
+      setShowScoreboard(true)
+      // Check for perfect score (all correct)
+      const finalCorrectAnswers = correct ? correctAnswers + 1 : correctAnswers
+      if (finalCorrectAnswers === currentSentences.length) {
+        recordPerfectScore()
+      }
+    }
+  }, [selectedWords, englishSentence, difficulty, currentIndex, currentSentences.length, recordSentenceBuilt, correctAnswers, recordPerfectScore])
 
   const nextSentence = useCallback(() => {
     if (currentIndex < currentSentences.length - 1) {
       setCurrentIndex((prev) => prev + 1)
-    } else {
-      // Game complete - reset
-      setCurrentIndex(0)
     }
   }, [currentIndex, currentSentences.length])
 
   const resetCurrent = useCallback(() => {
-    setAvailableWords(shuffleArray(currentSentence.words))
+    setAvailableWords(shuffleArray(sentenceWords))
     setSelectedWords([])
     setIsCorrect(null)
     setShowResult(false)
-  }, [currentSentence])
+  }, [currentSentence, sentenceWords])
+
+  const handleSessionReset = useCallback(() => {
+    startNewSession(difficulty)
+  }, [difficulty, startNewSession])
 
   return (
     <div className={cn("space-y-6", styles.container)}>
@@ -181,9 +158,6 @@ export function SentenceBuilderGame() {
           value={difficulty}
           onValueChange={(d) => {
             setDifficulty(d)
-            setCurrentIndex(0)
-            setScore(0)
-            setStreak(0)
           }}
           className="w-full sm:w-auto"
         />
@@ -215,8 +189,8 @@ export function SentenceBuilderGame() {
       <Card className={cn("border-2", styles.card)}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Translate this sentence:</span>
-            <AudioButton text={currentSentence.english} />
+            <span>{currentSentence.builderPrompt || "Translate this sentence:"}</span>
+            <AudioButton text={englishSentence} />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -228,7 +202,7 @@ export function SentenceBuilderGame() {
                 difficulty === "easy" ? "text-2xl" : difficulty === "medium" ? "text-xl" : "text-lg",
               )}
             >
-              {currentSentence.native}
+              {nativeSentence}
             </p>
           </div>
 
@@ -319,7 +293,7 @@ export function SentenceBuilderGame() {
                   <X className="h-6 w-6 text-destructive" />
                   <div>
                     <p className="font-semibold text-destructive">Not quite right</p>
-                    <p className="text-sm text-muted-foreground">Correct: {currentSentence.english}</p>
+                    <p className="text-sm text-muted-foreground">Correct: {englishSentence}</p>
                   </div>
                 </>
               )}
@@ -332,7 +306,7 @@ export function SentenceBuilderGame() {
               variant="outline"
               onClick={resetCurrent}
               className="gap-2 bg-transparent"
-              disabled={selectedWords.length === 0}
+              disabled={selectedWords.length === 0 || showScoreboard}
             >
               <RotateCcw className="h-4 w-4" />
               Reset
@@ -341,13 +315,16 @@ export function SentenceBuilderGame() {
               <Button
                 onClick={checkAnswer}
                 className={cn("flex-1 gap-2", colors.primary)}
-                disabled={selectedWords.length !== currentSentence.words.length}
+                disabled={selectedWords.length !== sentenceWords.length}
               >
                 <Check className="h-4 w-4" />
                 Check Answer
               </Button>
             ) : (
-              <Button onClick={nextSentence} className="flex-1 gap-2">
+              <Button
+                onClick={currentIndex < currentSentences.length - 1 ? nextSentence : handleSessionReset}
+                className="flex-1 gap-2"
+              >
                 {currentIndex < currentSentences.length - 1 ? (
                   <>
                     Next Sentence
@@ -355,8 +332,8 @@ export function SentenceBuilderGame() {
                   </>
                 ) : (
                   <>
-                    <Trophy className="h-4 w-4" />
-                    Complete! Play Again
+                    New Random Questions
+                    <RefreshCcw className="h-4 w-4" />
                   </>
                 )}
               </Button>
@@ -364,6 +341,42 @@ export function SentenceBuilderGame() {
           </div>
         </CardContent>
       </Card>
+
+      {showScoreboard && (
+        <Card className="border-2 border-dashed">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-future" />
+              Session Scoreboard
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              You completed all {questionCount} questions on the {difficulty} track.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="rounded-xl bg-muted/50 p-4 text-center">
+                <p className="text-sm text-muted-foreground">Total Score</p>
+                <p className="text-3xl font-bold text-future">{score}</p>
+              </div>
+              <div className="rounded-xl bg-muted/50 p-4 text-center">
+                <p className="text-sm text-muted-foreground">Accuracy</p>
+                <p className="text-3xl font-bold text-present">{accuracy}%</p>
+              </div>
+              <div className="rounded-xl bg-muted/50 p-4 text-center">
+                <p className="text-sm text-muted-foreground">Correct Answers</p>
+                <p className="text-3xl font-bold">
+                  {correctAnswers}/{questionCount}
+                </p>
+              </div>
+            </div>
+            <div className="rounded-xl border border-dashed border-muted p-4 text-center">
+              <p className="text-sm text-muted-foreground">Final streak this round</p>
+              <p className="text-2xl font-semibold text-present">{streak}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

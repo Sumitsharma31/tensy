@@ -1,5 +1,5 @@
-import { LoadingScreen } from "@/components/common/loading-screen"
+import { BuilderLoading } from "@/components/common/page-loading"
 
 export default function Loading() {
-  return <LoadingScreen message="Loading Sentence Builder" submessage="Preparing word blocks..." />
+  return <BuilderLoading />
 }

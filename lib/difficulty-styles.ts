@@ -4,28 +4,11 @@ export type Difficulty = "easy" | "medium" | "hard"
 
 export function getDifficultyStyles(difficulty: Difficulty) {
   return {
-    container: cn(
-      difficulty === "easy" && "text-lg leading-relaxed",
-      difficulty === "medium" && "text-base leading-normal",
-      difficulty === "hard" && "text-sm leading-snug",
-    ),
-    card: cn(
-      "transition-all",
-      difficulty === "easy" && "p-6 rounded-2xl",
-      difficulty === "medium" && "p-4 rounded-xl",
-      difficulty === "hard" && "p-3 rounded-lg",
-    ),
-    button: cn(
-      difficulty === "easy" && "h-14 text-lg px-8 rounded-2xl",
-      difficulty === "medium" && "h-11 text-base px-6 rounded-xl",
-      difficulty === "hard" && "h-9 text-sm px-4 rounded-lg",
-    ),
-    heading: cn(
-      difficulty === "easy" && "text-3xl font-bold",
-      difficulty === "medium" && "text-2xl font-semibold",
-      difficulty === "hard" && "text-xl font-medium",
-    ),
-    gap: cn(difficulty === "easy" && "gap-6", difficulty === "medium" && "gap-4", difficulty === "hard" && "gap-3"),
+    container: "text-base leading-normal",
+    card: "transition-all p-4 rounded-xl",
+    button: "h-11 text-base px-6 rounded-xl",
+    heading: "text-2xl font-semibold",
+    gap: "gap-4",
   }
 }
 

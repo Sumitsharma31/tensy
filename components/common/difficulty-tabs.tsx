@@ -9,36 +9,38 @@ interface DifficultyTabsProps {
   value: Difficulty
   onValueChange: (value: Difficulty) => void
   className?: string
+  disabled?: boolean
 }
 
-export function DifficultyTabs({ value, onValueChange, className }: DifficultyTabsProps) {
+export function DifficultyTabs({ value, onValueChange, className, disabled }: DifficultyTabsProps) {
   return (
-    <Tabs value={value} onValueChange={(v) => onValueChange(v as Difficulty)} className={className}>
-      <TabsList className="grid w-full grid-cols-3">
+    <Tabs
+      value={value}
+      onValueChange={(v) => onValueChange(v as Difficulty)}
+      className={cn("gap-0", className)}
+      aria-disabled={disabled}
+    >
+      <TabsList
+        className={cn(
+          "grid w-full grid-cols-3 gap-0",
+          disabled && "pointer-events-none opacity-60",
+        )}
+      >
         <TabsTrigger
           value="easy"
-          className={cn(
-            "data-[state=active]:bg-present data-[state=active]:text-primary-foreground",
-            "text-base font-medium",
-          )}
+          className="data-[state=active]:bg-present data-[state=active]:text-primary-foreground"
         >
           Easy
         </TabsTrigger>
         <TabsTrigger
           value="medium"
-          className={cn(
-            "data-[state=active]:bg-future data-[state=active]:text-primary-foreground",
-            "text-base font-medium",
-          )}
+          className="data-[state=active]:bg-future data-[state=active]:text-primary-foreground"
         >
           Medium
         </TabsTrigger>
         <TabsTrigger
           value="hard"
-          className={cn(
-            "data-[state=active]:bg-past data-[state=active]:text-primary-foreground",
-            "text-base font-medium",
-          )}
+          className="data-[state=active]:bg-past data-[state=active]:text-primary-foreground"
         >
           Hard
         </TabsTrigger>

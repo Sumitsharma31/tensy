@@ -3,19 +3,10 @@
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Languages, Check } from "lucide-react"
-import { useState } from "react"
-
-const languages = [
-  { code: "en", label: "English", native: "English" },
-  { code: "hi", label: "Hindi", native: "हिंदी" },
-  { code: "bn", label: "Bangla", native: "বাংলা" },
-  { code: "ml", label: "Malayalam", native: "മലയാളം" },
-  { code: "te", label: "Telugu", native: "తెలుగు" },
-  { code: "ta", label: "Tamil", native: "தமிழ்" },
-]
+import { useLanguage } from "@/components/providers/language-provider"
 
 export function LanguageToggle() {
-  const [selected, setSelected] = useState("en")
+  const { language, setLanguage, languages } = useLanguage()
 
   return (
     <DropdownMenu>
@@ -29,13 +20,13 @@ export function LanguageToggle() {
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => setSelected(lang.code)}
+            onClick={() => setLanguage(lang.code)}
             className="flex items-center justify-between"
           >
             <span>
               {lang.label} ({lang.native})
             </span>
-            {selected === lang.code && <Check className="h-4 w-4" />}
+            {language === lang.code && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

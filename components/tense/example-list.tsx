@@ -38,13 +38,7 @@ export function ExampleList({ sentences, tense, difficulty }: ExampleListProps) 
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-2">
                 <p className="text-muted-foreground text-sm">{sentence.native}</p>
-                <p
-                  className={cn(
-                    "font-medium",
-                    difficulty === "easy" && "text-xl",
-                    difficulty === "hard" && "text-base",
-                  )}
-                >
+                <p className="font-medium text-lg">
                   {sentence.english}
                 </p>
                 <Badge

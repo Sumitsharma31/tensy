@@ -1,11 +1,9 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
-import { Header } from "@/components/layout/header"
-import { Footer } from "@/components/layout/footer"
 import { SearchContent } from "@/components/search/search-content"
 
 export const metadata: Metadata = {
-  title: "Search Tenses & Grammar | Tense Grammar Playground",
+  title: "Search Tenses & Grammar | Tense Playground",
   description:
     "Search through all 12 English tenses, grammar rules, examples, and exercises. Find past, present, and future tense explanations quickly.",
   keywords: [
@@ -18,10 +16,10 @@ export const metadata: Metadata = {
     "learn English grammar",
   ],
   openGraph: {
-    title: "Search Tenses & Grammar | Tense Grammar Playground",
+    title: "Search Tenses & Grammar | Tense Playground",
     description: "Search through all 12 English tenses, grammar rules, examples, and exercises.",
     type: "website",
-    siteName: "Tense Grammar Playground",
+    siteName: "Tense Playground",
   },
   twitter: {
     card: "summary_large_image",
@@ -36,16 +34,10 @@ export const metadata: Metadata = {
 
 export default function SearchPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="container mx-auto px-4 py-8">
       <Suspense fallback={null}>
-        <Header />
+        <SearchContent />
       </Suspense>
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <Suspense fallback={null}>
-          <SearchContent />
-        </Suspense>
-      </main>
-      <Footer />
     </div>
   )
 }
