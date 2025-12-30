@@ -1,9 +1,24 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Sparkles, BookOpen, Gamepad2, Trophy } from "lucide-react"
+import Particles, { initParticlesEngine } from "@tsparticles/react"
+import { loadFireflyPreset } from "@tsparticles/preset-firefly"
 
 export function HeroSection() {
+  const [init, setInit] = useState(false)
+
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      await loadFireflyPreset(engine)
+    }).then(() => {
+      setInit(true)
+    })
+  }, [])
+
   return (
     <section className="relative overflow-hidden">
       {/* Background decoration */}
@@ -11,6 +26,19 @@ export function HeroSection() {
         <div className="absolute top-20 left-10 w-72 h-72 bg-past/10 rounded-full blur-3xl" />
         <div className="absolute top-40 right-20 w-96 h-96 bg-present/10 rounded-full blur-3xl" />
         <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-future/10 rounded-full blur-3xl" />
+        {init && (
+          <Particles
+            id="tsparticles"
+            className="absolute inset-0"
+            options={{
+              preset: "firefly",
+              background: {
+                opacity: 0,
+              },
+              fullScreen: false,
+            }}
+          />
+        )}
       </div>
 
       <div className="container mx-auto px-4 py-16 md:py-24">
@@ -71,7 +99,7 @@ export function HeroSection() {
               <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-future-light mb-2">
                 <Trophy className="h-6 w-6 text-future" />
               </div>
-              <span className="text-2xl md:text-3xl font-bold">150</span>
+              <span className="text-2xl md:text-3xl font-bold">150+</span>
               <span className="text-sm text-muted-foreground">Levels</span>
             </div>
           </div>

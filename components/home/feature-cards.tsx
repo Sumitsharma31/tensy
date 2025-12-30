@@ -30,11 +30,11 @@ const features = [
   },
   {
     title: "Quiz Challenge",
-    description: "50 levels per difficulty. MCQs, corrections, and instant feedback to track progress.",
+    description: "50+ levels per difficulty. MCQs, corrections, and instant feedback to track progress.",
     icon: Trophy,
     href: "/quiz",
     color: "present",
-    badge: "150 Levels",
+    badge: "150+ Levels",
   },
   {
     title: "Tips & Tricks",
