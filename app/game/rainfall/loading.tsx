@@ -1,5 +1,5 @@
-import { LoadingScreen } from "@/components/common/loading-screen"
+import { RainfallLoading } from "@/components/common/page-loading"
 
 export default function Loading() {
-  return <LoadingScreen message="Loading Word Rainfall" submessage="Get ready to catch words..." />
+  return <RainfallLoading />
 }

@@ -1,5 +1,5 @@
-import { LoadingScreen } from "@/components/common/loading-screen"
+import { QuizLoading } from "@/components/common/page-loading"
 
 export default function Loading() {
-  return <LoadingScreen message="Loading Quiz" submessage="Preparing questions..." />
+  return <QuizLoading />
 }

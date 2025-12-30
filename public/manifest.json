@@ -1,0 +1,85 @@
+{
+  "name": "Tense Playground",
+  "short_name": "Tense Play",
+  "description": "Master English tenses through interactive games, quizzes, and exercises. Learn grammar the fun way!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "games"],
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tense Playground Homepage"
+    },
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tense Playground Mobile View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Playground",
+      "short_name": "Play",
+      "description": "Explore all English tenses",
+      "url": "/playground",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Quiz",
+      "short_name": "Quiz",
+      "description": "Test your grammar knowledge",
+      "url": "/quiz",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sentence Builder",
+      "short_name": "Builder",
+      "description": "Build sentences to practice tenses",
+      "url": "/builder",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Daily Challenges",
+      "short_name": "Challenges",
+      "description": "Complete daily grammar challenges",
+      "url": "/challenges",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

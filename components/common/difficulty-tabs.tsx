@@ -22,7 +22,7 @@ export function DifficultyTabs({ value, onValueChange, className, disabled }: Di
     >
       <TabsList
         className={cn(
-          "grid w-full grid-cols-3 gap-0 p-1",
+          "grid w-full grid-cols-3 gap-0",
           disabled && "pointer-events-none opacity-60",
         )}
       >
