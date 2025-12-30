@@ -4,82 +4,56 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { useStreak } from "@/hooks/use-streak"
+import { useStreakContext } from "@/components/providers/streak-provider"
+import { useChallenges } from "@/hooks/use-challenges"
 import { cn } from "@/lib/utils"
-import { Flame, Calendar, Trophy, Target, Clock, Star, Award, Zap, CheckCircle } from "lucide-react"
+import { Flame, Calendar, Trophy, Target, Clock, Star, Award, Zap, CheckCircle, Coins } from "lucide-react"
 import Link from "next/link"
 
-const dailyChallenges = [
-  {
-    id: 1,
-    title: "Complete 3 Quiz Questions",
-    description: "Answer any 3 questions correctly in the Quiz section",
-    progress: 2,
-    total: 3,
-    reward: 50,
-    icon: Target,
-    href: "/quiz",
-  },
-  {
-    id: 2,
-    title: "Build 5 Sentences",
-    description: "Correctly build 5 sentences in Sentence Builder",
-    progress: 3,
-    total: 5,
-    reward: 75,
-    icon: Zap,
-    href: "/builder",
-  },
-  {
-    id: 3,
-    title: "Play Word Rainfall",
-    description: "Score at least 100 points in Word Rainfall game",
-    progress: 0,
-    total: 100,
-    reward: 100,
-    icon: Trophy,
-    href: "/game/rainfall",
-  },
-]
+const challengeIcons = {
+  quiz: Target,
+  builder: Zap,
+  rainfall: Trophy,
+}
 
-const weeklyChallenges = [
-  {
-    id: 1,
-    title: "7-Day Streak",
-    description: "Practice for 7 consecutive days",
-    progress: 5,
-    total: 7,
-    reward: 500,
-  },
-  {
-    id: 2,
-    title: "Master All Tenses",
-    description: "Complete at least 1 quiz level for each tense type",
-    progress: 8,
-    total: 12,
-    reward: 750,
-  },
-  {
-    id: 3,
-    title: "Perfect Score",
-    description: "Get 100% accuracy in any game",
-    progress: 0,
-    total: 1,
-    reward: 300,
-  },
-]
-
-const badges = [
-  { id: 1, name: "First Steps", description: "Complete your first lesson", earned: true, icon: Star },
-  { id: 2, name: "Quick Learner", description: "Complete 10 lessons", earned: true, icon: Zap },
-  { id: 3, name: "Grammar Guru", description: "Complete all easy levels", earned: false, icon: Award },
-  { id: 4, name: "Streak Master", description: "Maintain a 30-day streak", earned: false, icon: Flame },
-  { id: 5, name: "Perfect Score", description: "Get 100% in any quiz", earned: true, icon: CheckCircle },
-  { id: 6, name: "Time Traveler", description: "Master all 12 tenses", earned: false, icon: Clock },
-]
+const badgeIcons: Record<string, typeof Star> = {
+  "first-steps": Star,
+  "quick-learner": Zap,
+  "grammar-guru": Award,
+  "streak-master": Flame,
+  "perfect-score": CheckCircle,
+  "time-traveler": Clock,
+}
 
 export function ChallengesContent() {
-  const { currentStreak, longestStreak, totalDays, recordActivity } = useStreak()
+  const { currentStreak, longestStreak, totalDays, recordActivity } = useStreakContext()
+  const {
+    isLoaded,
+    totalXP,
+    hoursUntilDailyReset,
+    daysUntilWeeklyReset,
+    getDailyChallenges,
+    getWeeklyChallenges,
+    getBadges,
+    recordStreakMaster,
+  } = useChallenges()
+
+  // Check for streak master badge
+  if (currentStreak >= 30) {
+    recordStreakMaster(currentStreak)
+  }
+
+  const dailyChallenges = getDailyChallenges()
+  const weeklyChallenges = getWeeklyChallenges(currentStreak)
+  const badges = getBadges()
+
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -106,6 +80,13 @@ export function ChallengesContent() {
                 <p className="text-2xl font-bold">{totalDays}</p>
                 <p className="text-sm text-muted-foreground">Total Days</p>
               </div>
+              <div>
+                <p className="text-2xl font-bold flex items-center gap-1">
+                  <Coins className="h-5 w-5 text-yellow-500" />
+                  {totalXP}
+                </p>
+                <p className="text-sm text-muted-foreground">Total XP</p>
+              </div>
             </div>
 
             <Button onClick={recordActivity} className="bg-future hover:bg-future/90">
@@ -122,14 +103,15 @@ export function ChallengesContent() {
           <Calendar className="h-5 w-5 text-present" />
           <h2 className="text-xl font-bold">Daily Challenges</h2>
           <Badge variant="secondary" className="ml-auto">
-            Resets in 14h
+            Resets in {hoursUntilDailyReset}h
           </Badge>
         </div>
 
         <div className="grid gap-4">
           {dailyChallenges.map((challenge) => {
-            const isComplete = challenge.progress >= challenge.total
+            const isComplete = challenge.completed
             const progressPercent = (challenge.progress / challenge.total) * 100
+            const IconComponent = challengeIcons[challenge.type]
 
             return (
               <Card
@@ -144,7 +126,7 @@ export function ChallengesContent() {
                         isComplete ? "bg-present text-primary-foreground" : "bg-muted",
                       )}
                     >
-                      <challenge.icon className="h-6 w-6" />
+                      <IconComponent className="h-6 w-6" />
                     </div>
 
                     <div className="flex-1 min-w-0">
@@ -188,13 +170,13 @@ export function ChallengesContent() {
           <Trophy className="h-5 w-5 text-future" />
           <h2 className="text-xl font-bold">Weekly Challenges</h2>
           <Badge variant="secondary" className="ml-auto">
-            Resets in 5 days
+            Resets in {daysUntilWeeklyReset} days
           </Badge>
         </div>
 
         <div className="grid gap-4">
           {weeklyChallenges.map((challenge) => {
-            const isComplete = challenge.progress >= challenge.total
+            const isComplete = challenge.completed
             const progressPercent = (challenge.progress / challenge.total) * 100
 
             return (
@@ -237,28 +219,36 @@ export function ChallengesContent() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {badges.map((badge) => (
-            <Card
-              key={badge.id}
-              className={cn(
-                "border-2 text-center transition-all",
-                badge.earned ? "border-past bg-past-light/30" : "opacity-60",
-              )}
-            >
-              <CardHeader className="pb-2">
-                <div
-                  className={cn(
-                    "flex items-center justify-center w-12 h-12 rounded-full mx-auto",
-                    badge.earned ? "bg-past text-primary-foreground" : "bg-muted",
+          {badges.map((badge) => {
+            const IconComponent = badgeIcons[badge.id] || Star
+            return (
+              <Card
+                key={badge.id}
+                className={cn(
+                  "border-2 text-center transition-all",
+                  badge.earned ? "border-past bg-past-light/30" : "opacity-60",
+                )}
+              >
+                <CardHeader className="pb-2">
+                  <div
+                    className={cn(
+                      "flex items-center justify-center w-12 h-12 rounded-full mx-auto",
+                      badge.earned ? "bg-past text-primary-foreground" : "bg-muted",
+                    )}
+                  >
+                    <IconComponent className="h-6 w-6" />
+                  </div>
+                  <CardTitle className="text-base">{badge.name}</CardTitle>
+                  <CardDescription className="text-xs">{badge.description}</CardDescription>
+                  {badge.earned && badge.earnedDate && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Earned {new Date(badge.earnedDate).toLocaleDateString()}
+                    </p>
                   )}
-                >
-                  <badge.icon className="h-6 w-6" />
-                </div>
-                <CardTitle className="text-base">{badge.name}</CardTitle>
-                <CardDescription className="text-xs">{badge.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
+                </CardHeader>
+              </Card>
+            )
+          })}
         </div>
       </div>
     </div>

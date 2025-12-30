@@ -3,6 +3,8 @@ import type { Metadata, Viewport } from "next"
 import { Poppins, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/providers/theme-provider"
+import { LanguageProvider } from "@/components/providers/language-provider"
+import { StreakProvider } from "@/components/providers/streak-provider"
 import "./globals.css"
 
 const poppins = Poppins({
@@ -57,8 +59,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.className} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
-          <Analytics />
+          <LanguageProvider>
+            <StreakProvider>
+              {children}
+              <Analytics />
+            </StreakProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

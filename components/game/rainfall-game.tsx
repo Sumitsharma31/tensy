@@ -1,11 +1,16 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef, type PointerEvent } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo, type PointerEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { cancelSpeech, speakText, preloadVoices } from "@/lib/speech"
 import { getDifficultyColors, type Difficulty } from "@/lib/difficulty-styles"
+import { useChallenges } from "@/hooks/use-challenges"
 import { X } from "lucide-react"
+import { useLanguage } from "@/components/providers/language-provider"
+import easySentences from "@/data/sentence/easy.json"
+import mediumSentences from "@/data/sentence/medium.json"
+import hardSentences from "@/data/sentence/hard.json"
 import { ControlsHeader } from "./rainfall/controls-header"
 import { EndGameDialog } from "./rainfall/end-game-dialog"
 import { GameArea } from "./rainfall/game-area"
@@ -14,30 +19,12 @@ import { SentenceCard } from "./rainfall/sentence-card"
 import { StatsBadges } from "./rainfall/stats-badges"
 import { type FallingWord, type GameSentence } from "./rainfall/types"
 
-const sentences: Record<Difficulty, GameSentence[]> = {
-  easy: [
-    { native: "मैं खाना खाता हूँ।", english: "I eat food.", words: ["I", "eat", "food."] },
-    { native: "वह पढ़ती है।", english: "She reads books.", words: ["She", "reads", "books."] },
-    { native: "हम खेलते हैं।", english: "We play games.", words: ["We", "play", "games."] },
-    { native: "वे गाते हैं।", english: "They sing well.", words: ["They", "sing", "well."] },
-  ],
-  medium: [
-    { native: "मैं पढ़ रहा हूँ।", english: "I am studying now.", words: ["I", "am", "studying", "now."] },
-    { native: "वह कल आएगा।", english: "He will come tomorrow.", words: ["He", "will", "come", "tomorrow."] },
-    { native: "हमने खाना खाया।", english: "We ate our dinner.", words: ["We", "ate", "our", "dinner."] },
-  ],
-  hard: [
-    {
-      native: "मैंने किताब पढ़ ली है।",
-      english: "I have read the book.",
-      words: ["I", "have", "read", "the", "book."],
-    },
-    {
-      native: "वह दो घंटे से पढ़ रहा था।",
-      english: "He had been studying for hours.",
-      words: ["He", "had", "been", "studying", "for", "hours."],
-    },
-  ],
+type SentenceEntry = (typeof easySentences.sentences)[number]
+
+const sentenceData: Record<Difficulty, SentenceEntry[]> = {
+  easy: easySentences.sentences,
+  medium: mediumSentences.sentences,
+  hard: hardSentences.sentences,
 }
 
 const getInitialTime = (level: Difficulty) => (level === "easy" ? 60 : level === "medium" ? 120 : 180)
@@ -57,6 +44,8 @@ export function RainfallGame() {
   const [nextWordIndex, setNextWordIndex] = useState(0)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
+  const { language } = useLanguage()
+  const { recordRainfallScore, recordPerfectScore } = useChallenges()
 
   const gameAreaRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -66,7 +55,16 @@ export function RainfallGame() {
   const wordsStateRef = useRef<FallingWord[]>([])
   const nextWordIndexRef = useRef(0)
 
-  const currentSentences = sentences[difficulty]
+  const baseSentences = sentenceData[difficulty]
+  const currentSentences = useMemo<GameSentence[]>(
+    () =>
+      baseSentences.map((entry) => ({
+        native: entry.translations[language as keyof typeof entry.translations] ?? entry.translations.en,
+        english: entry.translations.en,
+        words: entry.wordBank,
+      })),
+    [baseSentences, language],
+  )
   const currentSentence = currentSentences[currentSentenceIndex % currentSentences.length]
   const colors = getDifficultyColors(difficulty)
 
@@ -445,8 +443,14 @@ export function RainfallGame() {
       setGameState("ended")
       setShowEndDialog(true)
       setIsSidebarOpen(false)
+      // Record the score for daily challenge
+      recordRainfallScore(score)
+      // Check for perfect score (no wrong answers)
+      if (correctCount > 0 && wrongCount === 0) {
+        recordPerfectScore()
+      }
     }
-  }, [gameState, timeLeft])
+  }, [gameState, timeLeft, score, correctCount, wrongCount, recordRainfallScore, recordPerfectScore])
 
   useEffect(() => {
     if (gameState === "ended") {

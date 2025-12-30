@@ -12,6 +12,7 @@ import { ArrowRight, Languages, BookOpen, Sparkles, Copy, Check } from "lucide-r
 
 const languages = [
   { code: "hi", label: "Hindi", native: "हिंदी" },
+  { code: "hi-latn", label: "Hinglish", native: "Hinglish" },
   { code: "bn", label: "Bangla", native: "বাংলা" },
   { code: "ml", label: "Malayalam", native: "മലയാളം" },
   { code: "te", label: "Telugu", native: "తెలుగు" },
@@ -26,11 +27,23 @@ const translations: Record<string, { english: string; tense: string; formula: st
     formula: "Subject + V1 + Object",
     breakdown: ["मैं (I) = Subject", "खाता हूँ (eat) = Verb (V1)", "खाना (food) = Object"],
   },
+  "main khana khata hoon.": {
+    english: "I eat food.",
+    tense: "Simple Present",
+    formula: "Subject + V1 + Object",
+    breakdown: ["main (I) = Subject", "khata hoon (eat) = Verb (V1)", "khana (food) = Object"],
+  },
   "वह स्कूल जाती है।": {
     english: "She goes to school.",
     tense: "Simple Present",
     formula: "Subject + V1(es) + Object",
     breakdown: ["वह (She) = Subject", "जाती है (goes) = Verb with 'es'", "स्कूल (school) = Object"],
+  },
+  "woh school jaati hai.": {
+    english: "She goes to school.",
+    tense: "Simple Present",
+    formula: "Subject + V1(es) + Object",
+    breakdown: ["woh (She) = Subject", "jaati hai (goes) = Verb with 'es'", "school (school) = Object"],
   },
   "मैंने खाना खाया।": {
     english: "I ate food.",
@@ -38,11 +51,23 @@ const translations: Record<string, { english: string; tense: string; formula: st
     formula: "Subject + V2 + Object",
     breakdown: ["मैंने (I) = Subject", "खाया (ate) = Verb (V2)", "खाना (food) = Object"],
   },
+  "maine khana khaya.": {
+    english: "I ate food.",
+    tense: "Simple Past",
+    formula: "Subject + V2 + Object",
+    breakdown: ["maine (I) = Subject", "khaya (ate) = Verb (V2)", "khana (food) = Object"],
+  },
   "वह पढ़ रही थी।": {
     english: "She was reading.",
     tense: "Past Continuous",
     formula: "Subject + was/were + V1+ing",
     breakdown: ["वह (She) = Subject", "थी (was) = Helping verb", "पढ़ रही (reading) = Main verb + ing"],
+  },
+  "main kal jaunga.": {
+    english: "I will go tomorrow.",
+    tense: "Simple Future",
+    formula: "Subject + will + V1",
+    breakdown: ["main (I) = Subject", "jaunga (will go) = will + V1", "kal (tomorrow) = Time"],
   },
   "मैं कल जाऊँगा।": {
     english: "I will go tomorrow.",

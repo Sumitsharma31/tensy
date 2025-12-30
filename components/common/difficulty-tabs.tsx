@@ -17,39 +17,30 @@ export function DifficultyTabs({ value, onValueChange, className, disabled }: Di
     <Tabs
       value={value}
       onValueChange={(v) => onValueChange(v as Difficulty)}
-      className={className}
+      className={cn("gap-0", className)}
       aria-disabled={disabled}
     >
       <TabsList
         className={cn(
-          "grid w-full grid-cols-3 gap-2",
+          "grid w-full grid-cols-3 gap-0 p-1",
           disabled && "pointer-events-none opacity-60",
         )}
       >
         <TabsTrigger
           value="easy"
-          className={cn(
-            "data-[state=active]:bg-present data-[state=active]:text-primary-foreground",
-            "text-sm sm:text-base font-medium whitespace-nowrap",
-          )}
+          className="data-[state=active]:bg-present data-[state=active]:text-primary-foreground"
         >
           Easy
         </TabsTrigger>
         <TabsTrigger
           value="medium"
-          className={cn(
-            "data-[state=active]:bg-future data-[state=active]:text-primary-foreground",
-            "text-sm sm:text-base font-medium whitespace-nowrap",
-          )}
+          className="data-[state=active]:bg-future data-[state=active]:text-primary-foreground"
         >
           Medium
         </TabsTrigger>
         <TabsTrigger
           value="hard"
-          className={cn(
-            "data-[state=active]:bg-past data-[state=active]:text-primary-foreground",
-            "text-sm sm:text-base font-medium whitespace-nowrap",
-          )}
+          className="data-[state=active]:bg-past data-[state=active]:text-primary-foreground"
         >
           Hard
         </TabsTrigger>

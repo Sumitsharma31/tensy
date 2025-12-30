@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ThemeSwitch } from "@/components/common/theme-switch"
 import { LanguageToggle } from "@/components/common/language-toggle"
+import { useStreakContext } from "@/components/providers/streak-provider"
 import { cn } from "@/lib/utils"
 import { BookOpen, Gamepad2, Trophy, Lightbulb, Languages, Menu, X, Flame } from "lucide-react"
 import { useState } from "react"
@@ -21,6 +22,7 @@ const navItems = [
 export function Header() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { currentStreak } = useStreakContext()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -51,9 +53,9 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <Link href="/challenges" className="hidden sm:flex">
-              <Button variant="ghost" size="sm" className="gap-2 text-future">
-                <Flame className="h-4 w-4" />
-                <span className="font-semibold">5</span>
+              <Button variant="ghost" size="sm" className={cn("gap-2", currentStreak > 0 ? "text-future" : "text-muted-foreground")}>
+                <Flame className={cn("h-4 w-4", currentStreak > 0 && "text-orange-500")} />
+                <span className="font-semibold">{currentStreak}</span>
               </Button>
             </Link>
             <LanguageToggle />
