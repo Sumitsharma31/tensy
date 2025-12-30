@@ -18,17 +18,17 @@ export function TenseTimeline({ activeTense = "present", onTenseSelect }: TenseT
 
   return (
     <div className="w-full">
-      <div className="relative flex items-center justify-between px-8">
+      <div className="relative flex items-center justify-between px-4 sm:px-8">
         {/* Timeline line - absolute positioned behind circles */}
-        <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-1 bg-muted rounded-full" />
+        <div className="absolute left-4 right-4 sm:left-8 sm:right-8 top-1/2 -translate-y-1/2 h-0.5 sm:h-1 bg-muted rounded-full" />
 
         {/* Active portion highlight */}
         <div
           className={cn(
-            "absolute top-1/2 -translate-y-1/2 h-1 rounded-full transition-all duration-300",
-            activeTense === "past" && "left-8 w-[15%] bg-past",
+            "absolute top-1/2 -translate-y-1/2 h-0.5 sm:h-1 rounded-full transition-all duration-300",
+            activeTense === "past" && "left-4 sm:left-8 w-[15%] bg-past",
             activeTense === "present" && "left-1/2 -translate-x-1/2 w-[15%] bg-present",
-            activeTense === "future" && "right-8 w-[15%] bg-future",
+            activeTense === "future" && "right-4 sm:right-8 w-[15%] bg-future",
           )}
         />
 
@@ -38,8 +38,8 @@ export function TenseTimeline({ activeTense = "present", onTenseSelect }: TenseT
             key={tense.id}
             onClick={() => onTenseSelect?.(tense.id)}
             className={cn(
-              "relative z-10 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all",
-              "border-4 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring",
+              "relative z-10 w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg transition-all",
+              "border-2 sm:border-4 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring",
               tense.id === "past" && "border-past",
               tense.id === "present" && "border-present",
               tense.id === "future" && "border-future",
@@ -54,12 +54,12 @@ export function TenseTimeline({ activeTense = "present", onTenseSelect }: TenseT
         ))}
       </div>
 
-      <div className="flex items-center justify-between px-8 mt-3">
+      <div className="flex items-center justify-between px-4 sm:px-8 mt-2 sm:mt-3">
         {tenses.map((tense) => (
           <span
             key={tense.id}
             className={cn(
-              "font-semibold text-center w-12",
+              "font-semibold text-center text-xs sm:text-base w-8 sm:w-12",
               tense.id === "past" && "text-past",
               tense.id === "present" && "text-present",
               tense.id === "future" && "text-future",

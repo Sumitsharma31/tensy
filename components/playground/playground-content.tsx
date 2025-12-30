@@ -241,17 +241,17 @@ export function PlaygroundContent() {
       {/* Search Input */}
       <Card className="border-2">
         <CardContent className="pt-6">
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 placeholder="Type a sentence in your native language..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 text-lg"
+                className="pl-10 h-12 text-base sm:text-lg"
               />
             </div>
-            <Button className="h-12 px-6">Analyze</Button>
+            <Button className="h-12 px-6 w-full sm:w-auto">Analyze</Button>
           </div>
         </CardContent>
       </Card>
@@ -265,17 +265,19 @@ export function PlaygroundContent() {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="explanation" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 h-12">
-          <TabsTrigger value="explanation" className="gap-2 text-base">
-            <BookOpen className="h-4 w-4" />
-            Explanation
+        <TabsList className="grid w-full grid-cols-3 h-10 sm:h-12">
+          <TabsTrigger value="explanation" className="gap-1 sm:gap-2 text-xs sm:text-base px-1 sm:px-3">
+            <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden xs:inline">Explanation</span>
+            <span className="xs:hidden">Explain</span>
           </TabsTrigger>
-          <TabsTrigger value="examples" className="gap-2 text-base">
-            <FlaskConical className="h-4 w-4" />
-            Examples
+          <TabsTrigger value="examples" className="gap-1 sm:gap-2 text-xs sm:text-base px-1 sm:px-3">
+            <FlaskConical className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden xs:inline">Examples</span>
+            <span className="xs:hidden">Ex.</span>
           </TabsTrigger>
-          <TabsTrigger value="practice" className="gap-2 text-base">
-            <PenLine className="h-4 w-4" />
+          <TabsTrigger value="practice" className="gap-1 sm:gap-2 text-xs sm:text-base px-1 sm:px-3">
+            <PenLine className="h-3 w-3 sm:h-4 sm:w-4" />
             Practice
           </TabsTrigger>
         </TabsList>
@@ -338,6 +340,7 @@ function PracticeSection({
   difficulty: Difficulty
 }) {
   const [answer, setAnswer] = useState("")
+  const [submittedAnswer, setSubmittedAnswer] = useState("")
   const [showResult, setShowResult] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -401,10 +404,16 @@ function PracticeSection({
     const nextIndex = (currentQuestionIndex + 1) % filteredSentences.length
     setCurrentQuestionIndex(nextIndex)
     setAnswer("")
+    setSubmittedAnswer("")
     setShowResult(false)
   }
 
-  const isCorrect = answer.toLowerCase().trim() === currentQuestion.answer.toLowerCase()
+  const handleCheck = () => {
+    setSubmittedAnswer(answer)
+    setShowResult(true)
+  }
+
+  const isCorrect = submittedAnswer.toLowerCase().trim() === currentQuestion.answer.toLowerCase()
 
   return (
     <Card className="border-2">
@@ -441,7 +450,6 @@ function PracticeSection({
           >
             {currentQuestion.tenseInfo.name}
           </span>
-          <span className="text-sm text-muted-foreground">{currentQuestion.title}</span>
         </div>
 
         <div
@@ -475,14 +483,14 @@ function PracticeSection({
           </p>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <Input
             placeholder="Type your answer..."
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            className="h-12"
+            className="h-12 flex-1"
           />
-          <Button onClick={() => setShowResult(true)} className="h-12 px-6">
+          <Button onClick={handleCheck} className="h-12 px-6 w-full sm:w-auto">
             Check
           </Button>
         </div>

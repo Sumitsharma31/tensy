@@ -153,42 +153,40 @@ export function ChallengesContent() {
                 className={cn("border-2 transition-all", isComplete && "border-present bg-present-light/30")}
               >
                 <CardContent className="py-4">
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={cn(
-                        "flex items-center justify-center w-12 h-12 rounded-xl",
-                        isComplete ? "bg-present text-primary-foreground" : "bg-muted",
-                      )}
-                    >
-                      <IconComponent className="h-6 w-6" />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold truncate">{challenge.title}</h3>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={cn(
+                            "flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg shrink-0",
+                            isComplete ? "bg-present text-primary-foreground" : "bg-muted",
+                          )}
+                        >
+                          <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </div>
+                        <h3 className="font-semibold">{challenge.title}</h3>
                         {isComplete && <CheckCircle className="h-4 w-4 text-present shrink-0" />}
                       </div>
-                      <p className="text-sm text-muted-foreground truncate">{challenge.description}</p>
-                      <div className="flex items-center gap-4 mt-2">
-                        <Progress value={progressPercent} className="h-2 flex-1" />
-                        <span className="text-sm font-medium whitespace-nowrap">
-                          {challenge.progress}/{challenge.total}
-                        </span>
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <Badge className="bg-present text-primary-foreground whitespace-nowrap">
+                          <Star className="h-3 w-3 mr-1" />
+                          {challenge.reward} XP
+                        </Badge>
+                        {!isComplete && (
+                          <Link href={challenge.href}>
+                            <Button size="sm" variant="outline" className="bg-transparent">
+                              Go
+                            </Button>
+                          </Link>
+                        )}
                       </div>
                     </div>
-
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge variant="outline" className="whitespace-nowrap">
-                        <Star className="h-3 w-3 mr-1" />
-                        {challenge.reward} XP
-                      </Badge>
-                      {!isComplete && (
-                        <Link href={challenge.href}>
-                          <Button size="sm" variant="outline" className="bg-transparent">
-                            Go
-                          </Button>
-                        </Link>
-                      )}
+                    <p className="text-sm text-muted-foreground">{challenge.description}</p>
+                    <div className="flex items-center gap-4">
+                      <Progress value={progressPercent} className="h-2 flex-1" />
+                      <span className="text-sm font-medium whitespace-nowrap">
+                        {challenge.progress}/{challenge.total}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -219,24 +217,24 @@ export function ChallengesContent() {
                 className={cn("border-2 transition-all", isComplete && "border-future bg-future-light/30")}
               >
                 <CardContent className="py-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-2">
                         <h3 className="font-semibold">{challenge.title}</h3>
                         {isComplete && <CheckCircle className="h-4 w-4 text-future" />}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">{challenge.description}</p>
-                      <div className="flex items-center gap-4">
-                        <Progress value={progressPercent} className="h-2 flex-1 max-w-xs" />
-                        <span className="text-sm font-medium">
-                          {challenge.progress}/{challenge.total}
-                        </span>
-                      </div>
+                      <Badge className="bg-future text-primary-foreground whitespace-nowrap shrink-0">
+                        <Star className="h-3 w-3 mr-1" />
+                        {challenge.reward} XP
+                      </Badge>
                     </div>
-                    <Badge className="bg-future text-primary-foreground whitespace-nowrap">
-                      <Star className="h-3 w-3 mr-1" />
-                      {challenge.reward} XP
-                    </Badge>
+                    <p className="text-sm text-muted-foreground">{challenge.description}</p>
+                    <div className="flex items-center gap-4">
+                      <Progress value={progressPercent} className="h-2 flex-1" />
+                      <span className="text-sm font-medium whitespace-nowrap">
+                        {challenge.progress}/{challenge.total}
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

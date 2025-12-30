@@ -167,13 +167,13 @@ export function SentenceBuilderGame() {
           className="w-full sm:w-auto"
         />
 
-        <div className="flex items-center gap-4">
-          <Badge variant="outline" className="gap-2 px-4 py-2">
-            <Trophy className="h-4 w-4 text-future" />
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Badge variant="outline" className="gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm">
+            <Trophy className="h-3 w-3 sm:h-4 sm:w-4 text-future" />
             Score: {score}
           </Badge>
-          <Badge variant="outline" className={cn("gap-2 px-4 py-2", streak > 0 && "bg-present-light border-present")}>
-            <Zap className="h-4 w-4 text-present" />
+          <Badge variant="outline" className={cn("gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm", streak > 0 && "bg-present-light border-present")}>
+            <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-present" />
             Streak: {streak}
           </Badge>
         </div>
@@ -181,7 +181,7 @@ export function SentenceBuilderGame() {
 
       {/* Progress */}
       <div className="space-y-2">
-        <div className="flex justify-between text-sm text-muted-foreground">
+        <div className="flex justify-between text-xs sm:text-sm text-muted-foreground">
           <span>
             Question {currentIndex + 1} of {currentSentences.length}
           </span>
@@ -192,19 +192,19 @@ export function SentenceBuilderGame() {
 
       {/* Main game area */}
       <Card className={cn("border-2", styles.card)}>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+        <CardHeader className="pb-3 sm:pb-6">
+          <CardTitle className="flex items-center justify-between text-sm sm:text-base">
             <span>{currentSentence.builderPrompt || "Translate this sentence:"}</span>
             <AudioButton text={englishSentence} />
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           {/* Native sentence */}
-          <div className={cn("p-4 rounded-xl text-center", colors.light)}>
+          <div className={cn("p-3 sm:p-4 rounded-xl text-center", colors.light)}>
             <p
               className={cn(
                 "font-medium",
-                difficulty === "easy" ? "text-2xl" : difficulty === "medium" ? "text-xl" : "text-lg",
+                difficulty === "easy" ? "text-lg sm:text-2xl" : difficulty === "medium" ? "text-base sm:text-xl" : "text-sm sm:text-lg",
               )}
             >
               {nativeSentence}
@@ -213,27 +213,28 @@ export function SentenceBuilderGame() {
 
           {/* Selected words area */}
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Your sentence:</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Your sentence:</p>
             <div
               className={cn(
-                "min-h-20 p-4 border-2 border-dashed rounded-xl flex flex-wrap gap-2 items-center",
+                "min-h-16 sm:min-h-20 p-3 sm:p-4 border-2 border-dashed rounded-xl flex flex-wrap gap-1.5 sm:gap-2 items-center",
                 selectedWords.length === 0 && "justify-center",
                 isCorrect === true && "border-present bg-present-light",
                 isCorrect === false && "border-destructive bg-destructive/10",
               )}
             >
               {selectedWords.length === 0 ? (
-                <p className="text-muted-foreground">Click words below to build your sentence...</p>
+                <p className="text-xs sm:text-sm text-muted-foreground text-center">Click words below to build your sentence...</p>
               ) : (
                 selectedWords.map((word, index) => (
                   <Button
                     key={`${word}-${index}`}
                     variant="secondary"
+                    size="sm"
                     className={cn(
-                      "transition-all",
+                      "transition-all text-xs sm:text-sm h-8 sm:h-9",
                       styles.button,
-                      difficulty === "easy" && "text-lg px-6",
-                      difficulty === "hard" && "text-sm px-3",
+                      difficulty === "easy" && "sm:text-lg sm:px-6",
+                      difficulty === "hard" && "text-xs sm:px-3",
                     )}
                     onClick={() => handleWordRemove(word, index)}
                     disabled={showResult}
@@ -247,24 +248,25 @@ export function SentenceBuilderGame() {
 
           {/* Available words */}
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Available words:</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Available words:</p>
             <div
               className={cn(
-                "p-4 bg-muted/50 rounded-xl flex flex-wrap gap-2",
-                difficulty === "easy" && "gap-3",
-                difficulty === "hard" && "gap-2",
+                "p-3 sm:p-4 bg-muted/50 rounded-xl flex flex-wrap gap-1.5 sm:gap-2",
+                difficulty === "easy" && "sm:gap-3",
+                difficulty === "hard" && "gap-1.5 sm:gap-2",
               )}
             >
               {availableWords.map((word, index) => (
                 <Button
                   key={`${word}-${index}`}
                   variant="outline"
+                  size="sm"
                   className={cn(
-                    "transition-all hover:scale-105",
+                    "transition-all hover:scale-105 text-xs sm:text-sm h-8 sm:h-9",
                     styles.button,
                     colors.primary.replace("bg-", "hover:bg-").replace("text-", "hover:text-"),
-                    difficulty === "easy" && "text-lg px-6",
-                    difficulty === "hard" && "text-sm px-3",
+                    difficulty === "easy" && "sm:text-lg sm:px-6",
+                    difficulty === "hard" && "text-xs sm:px-3",
                   )}
                   onClick={() => handleWordSelect(word, index)}
                   disabled={showResult}
@@ -279,26 +281,26 @@ export function SentenceBuilderGame() {
           {showResult && (
             <div
               className={cn(
-                "p-4 rounded-xl flex items-center gap-3",
+                "p-3 sm:p-4 rounded-xl flex items-center gap-2 sm:gap-3",
                 isCorrect ? "bg-present-light" : "bg-destructive/10",
               )}
             >
               {isCorrect ? (
                 <>
-                  <Check className="h-6 w-6 text-present" />
+                  <Check className="h-5 w-5 sm:h-6 sm:w-6 text-present shrink-0" />
                   <div>
-                    <p className="font-semibold text-present">Excellent!</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-semibold text-sm sm:text-base text-present">Excellent!</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       +{difficulty === "easy" ? 10 : difficulty === "medium" ? 20 : 30} points
                     </p>
                   </div>
                 </>
               ) : (
                 <>
-                  <X className="h-6 w-6 text-destructive" />
-                  <div>
-                    <p className="font-semibold text-destructive">Not quite right</p>
-                    <p className="text-sm text-muted-foreground">Correct: {englishSentence}</p>
+                  <X className="h-5 w-5 sm:h-6 sm:w-6 text-destructive shrink-0" />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm sm:text-base text-destructive">Not quite right</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground break-words">Correct: {englishSentence}</p>
                   </div>
                 </>
               )}
@@ -306,39 +308,42 @@ export function SentenceBuilderGame() {
           )}
 
           {/* Action buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-2 sm:gap-4">
             <Button
               variant="outline"
+              size="sm"
               onClick={resetCurrent}
-              className="gap-2 bg-transparent"
+              className="gap-1 sm:gap-2 bg-transparent text-xs sm:text-sm h-9 sm:h-10"
               disabled={selectedWords.length === 0 || showScoreboard}
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4" />
               Reset
             </Button>
             {!showResult ? (
               <Button
                 onClick={checkAnswer}
-                className={cn("flex-1 gap-2", colors.primary)}
+                size="sm"
+                className={cn("flex-1 gap-1 sm:gap-2 text-xs sm:text-sm h-9 sm:h-10", colors.primary)}
                 disabled={selectedWords.length !== sentenceWords.length}
               >
-                <Check className="h-4 w-4" />
+                <Check className="h-3 w-3 sm:h-4 sm:w-4" />
                 Check Answer
               </Button>
             ) : (
               <Button
                 onClick={currentIndex < currentSentences.length - 1 ? nextSentence : handleSessionReset}
-                className="flex-1 gap-2"
+                size="sm"
+                className="flex-1 gap-1 sm:gap-2 text-xs sm:text-sm h-9 sm:h-10"
               >
                 {currentIndex < currentSentences.length - 1 ? (
                   <>
                     Next Sentence
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
                   </>
                 ) : (
                   <>
                     New Random Questions
-                    <RefreshCcw className="h-4 w-4" />
+                    <RefreshCcw className="h-3 w-3 sm:h-4 sm:w-4" />
                   </>
                 )}
               </Button>
