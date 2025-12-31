@@ -13,8 +13,20 @@ export type SpeakOptions = {
 
 export const isSpeechSupported = () => typeof window !== "undefined" && "speechSynthesis" in window
 
+// Detect mobile/iOS for special handling
+const isMobile = () => {
+  if (typeof window === "undefined") return false
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+}
+
+const isIOS = () => {
+  if (typeof window === "undefined") return false
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent)
+}
+
 let voicesReadyPromise: Promise<SpeechSynthesisVoice[]> | null = null
 let voicesLoaded = false
+let speechUnlocked = false
 
 export const preloadVoices = () => {
   if (!isSpeechSupported()) return Promise.resolve<SpeechSynthesisVoice[]>([])
@@ -40,9 +52,37 @@ export const preloadVoices = () => {
     window.speechSynthesis.addEventListener("voiceschanged", handle)
     // Trigger voice loading
     window.speechSynthesis.getVoices()
+    
+    // Fallback timeout for mobile browsers that may not fire voiceschanged
+    setTimeout(() => {
+      const voices = window.speechSynthesis.getVoices()
+      if (voices.length) {
+        voicesLoaded = true
+        resolve(voices)
+        window.speechSynthesis.removeEventListener("voiceschanged", handle)
+      } else {
+        // Resolve with empty array if no voices after timeout
+        resolve([])
+      }
+    }, 1000)
   })
 
   return voicesReadyPromise
+}
+
+// Unlock speech synthesis on mobile (must be called from user interaction)
+export const unlockSpeech = () => {
+  if (!isSpeechSupported() || speechUnlocked) return
+  
+  // Create and immediately cancel a silent utterance to "unlock" speech on mobile
+  const utterance = new SpeechSynthesisUtterance("")
+  utterance.volume = 0
+  window.speechSynthesis.speak(utterance)
+  window.speechSynthesis.cancel()
+  speechUnlocked = true
+  
+  // Also preload voices
+  preloadVoices()
 }
 
 // Preload voices immediately when module loads
@@ -91,8 +131,17 @@ export const speakText = (text: string, options?: SpeakOptions) => {
   
   lastSpeakTime = now
 
+  // iOS/Mobile workaround: Cancel any existing speech first
+  // This helps prevent the "stuck" state on mobile browsers
+  if (isMobile()) {
+    window.speechSynthesis.cancel()
+    pendingCount = 0
+  }
+
   const utterance = new SpeechSynthesisUtterance(text)
-  if (options?.rate) utterance.rate = options.rate
+  
+  // Set rate - mobile sometimes needs slightly different values
+  utterance.rate = options?.rate ?? (isMobile() ? 0.9 : 1)
   if (options?.pitch) utterance.pitch = options.pitch
   if (options?.volume !== undefined) utterance.volume = options.volume
 
@@ -115,12 +164,18 @@ export const speakText = (text: string, options?: SpeakOptions) => {
     if (options?.onEnd) options.onEnd()
   }
   
-  utterance.onerror = () => {
+  utterance.onerror = (event) => {
     pendingCount = Math.max(0, pendingCount - 1)
-    if (options?.onError) options.onError()
+    // On mobile, some "errors" are actually just cancellations - don't treat as errors
+    if (event.error !== 'interrupted' && event.error !== 'canceled') {
+      if (options?.onError) options.onError()
+    } else {
+      // Still call onEnd for interrupted/canceled
+      if (options?.onEnd) options.onEnd()
+    }
   }
 
-  // Always resume if paused (common browser bug)
+  // Always resume if paused (common browser bug, especially on iOS)
   if (window.speechSynthesis.paused) {
     window.speechSynthesis.resume()
   }
@@ -130,7 +185,27 @@ export const speakText = (text: string, options?: SpeakOptions) => {
     return utterance
   }
 
-  // Only cancel if explicitly not allowing queue
+  // For mobile: use direct speak without timeout for better user interaction handling
+  if (isMobile()) {
+    // Ensure we're not paused
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume()
+    }
+    window.speechSynthesis.speak(utterance)
+    
+    // iOS Safari workaround: sometimes speech gets stuck, add a safety timeout
+    if (isIOS()) {
+      setTimeout(() => {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume()
+        }
+      }, 100)
+    }
+    
+    return utterance
+  }
+
+  // Only cancel if explicitly not allowing queue (desktop behavior)
   if (!options?.allowQueue && window.speechSynthesis.speaking) {
     cancelSpeech()
     pendingCount = 0

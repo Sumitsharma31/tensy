@@ -73,7 +73,7 @@ export function RainfallGame() {
   const currentSentence = currentSentences[currentSentenceIndex % currentSentences.length]
   const colors = getDifficultyColors(difficulty)
 
-  const baseSpeed = difficulty === "easy" ? 40 : difficulty === "medium" ? 60 : 80
+  const baseSpeed = difficulty === "easy" ? 80 : difficulty === "medium" ? 85 : 90
 
   const toggleFullscreen = useCallback(async () => {
     if (!fullscreenContainerRef.current) return
@@ -279,6 +279,7 @@ export function RainfallGame() {
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       let allFallen = true
+      let hasActiveWords = false
       const fontSize = difficulty === "easy" ? 24 : difficulty === "medium" ? 18 : 16
       const paddingX = difficulty === "easy" ? 24 : 16
       const paddingY = difficulty === "easy" ? 12 : 8
@@ -299,6 +300,8 @@ export function RainfallGame() {
           if (fw.scale === undefined) fw.scale = 1
           if (fw.opacity === undefined) fw.opacity = 1
 
+          // Only check non-removed words for falling status
+          hasActiveWords = true
           if (fw.y <= canvas.height + 50) {
             allFallen = false
           }
@@ -369,7 +372,8 @@ export function RainfallGame() {
         ctx.globalAlpha = 1
       })
 
-      if (allFallen && wordsStateRef.current.length > 0) {
+      // Only trigger respawn if there are active (non-removed) words that have all fallen
+      if (allFallen && hasActiveWords && wordsStateRef.current.length > 0) {
         needsRespawnRef.current = true
       }
 
@@ -425,15 +429,15 @@ export function RainfallGame() {
     return () => clearInterval(checkRespawn)
   }, [gameState, currentSentence, spawnWords])
 
+  // Track if score was recorded to prevent double recording
+  const scoreRecordedRef = useRef(false)
+
   useEffect(() => {
     if (gameState !== "playing") return
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          setGameState("ended")
-          setShowEndDialog(true)
-          setIsSidebarOpen(false)
           return 0
         }
         return prev - 1
@@ -443,11 +447,19 @@ export function RainfallGame() {
     return () => clearInterval(timer)
   }, [gameState])
 
+  // Handle game end when time runs out
   useEffect(() => {
     if (gameState === "playing" && timeLeft <= 0) {
       setGameState("ended")
       setShowEndDialog(true)
       setIsSidebarOpen(false)
+    }
+  }, [gameState, timeLeft])
+
+  // Record score when game ends
+  useEffect(() => {
+    if (gameState === "ended" && !scoreRecordedRef.current) {
+      scoreRecordedRef.current = true
       // Record the score for daily challenge
       recordRainfallScore(score)
       // Check for perfect score (no wrong answers)
@@ -455,7 +467,7 @@ export function RainfallGame() {
         recordPerfectScore()
       }
     }
-  }, [gameState, timeLeft, score, correctCount, wrongCount, recordRainfallScore, recordPerfectScore])
+  }, [gameState, score, correctCount, wrongCount, recordRainfallScore, recordPerfectScore])
 
   useEffect(() => {
     if (gameState === "ended") {
@@ -467,10 +479,14 @@ export function RainfallGame() {
     }
   }, [gameState])
 
+  // Track if current sentence was already processed to prevent double counting
+  const sentenceProcessedRef = useRef(false)
+
   useEffect(() => {
     if (gameState !== "playing") return
 
-    if (selectedWords.length === currentSentence.words.length) {
+    if (selectedWords.length === currentSentence.words.length && !sentenceProcessedRef.current) {
+      sentenceProcessedRef.current = true
       const isCorrect = selectedWords.join(" ") === currentSentence.english
 
       if (isCorrect) {
@@ -489,6 +505,7 @@ export function RainfallGame() {
         setSelectedWords([])
         setCurrentSentenceIndex(nextIndex)
         spawnWords(nextSentence)
+        sentenceProcessedRef.current = false
       }, 500)
     }
   }, [selectedWords, currentSentence, combo, difficulty, currentSentenceIndex, currentSentences, spawnWords, gameState])
@@ -506,6 +523,8 @@ export function RainfallGame() {
     setShowEndDialog(false)
     setIsSidebarOpen(false)
     needsRespawnRef.current = false
+    scoreRecordedRef.current = false
+    sentenceProcessedRef.current = false
 
     const firstSentence = currentSentences[0]
     setTimeout(() => spawnWords(firstSentence), 100)
@@ -530,6 +549,8 @@ export function RainfallGame() {
       setTimeLeft(getInitialTime(targetDifficulty ?? difficulty))
       setSelectedWords([])
       setCurrentSentenceIndex(0)
+      scoreRecordedRef.current = false
+      sentenceProcessedRef.current = false
       setNextWordIndex(0)
       setShowEndDialog(false)
       needsRespawnRef.current = false
@@ -591,7 +612,7 @@ export function RainfallGame() {
           wrongCount={wrongCount}
         />
 
-        <SentenceCard sentence={currentSentence} nextWordIndex={nextWordIndex} borderClass={colors.border} className="lg:block md:block hidden" />
+        <SentenceCard sentence={currentSentence} nextWordIndex={nextWordIndex} borderClass={colors.border} className={cn("lg:block md:block", isFullscreen ? "hidden" : "block")} />
 
         <SelectedWordsCard
           words={selectedWords}
