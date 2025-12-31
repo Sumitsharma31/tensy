@@ -10,10 +10,11 @@ import { FormulaCard } from "@/components/tense/formula-card"
 import { ExampleList } from "@/components/tense/example-list"
 import { DifficultyTabs } from "@/components/common/difficulty-tabs"
 import { useChallenges } from "@/hooks/use-challenges"
-import { Search, BookOpen, FlaskConical, PenLine, Volume2, RefreshCw } from "lucide-react"
+import { Search, BookOpen, FlaskConical, PenLine, Volume2, RefreshCw, Loader2 } from "lucide-react"
 import type { Difficulty } from "@/lib/difficulty-styles"
 import { getDifficultyStyles } from "@/lib/difficulty-styles"
 import { cancelSpeech, speakText } from "@/lib/speech"
+import { analyzeSentence, type TenseAnalysisResult } from "@/services/ai-service"
 
 // Import sentence data
 import easySentences from "@/data/sentence/easy.json"
@@ -226,12 +227,40 @@ export function PlaygroundContent() {
   const [activeTense, setActiveTense] = useState<"past" | "present" | "future">("present")
   const [difficulty, setDifficulty] = useState<Difficulty>("easy")
   const [searchQuery, setSearchQuery] = useState("")
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisResult, setAnalysisResult] = useState<TenseAnalysisResult | null>(null)
+  const [analysisError, setAnalysisError] = useState<string | null>(null)
   const { recordSectionVisit } = useChallenges()
 
   // Track section visit for Explorer badge
   useEffect(() => {
     recordSectionVisit("playground")
   }, [recordSectionVisit])
+
+  const handleAnalyze = async () => {
+    if (!searchQuery.trim()) {
+      setAnalysisError("Please enter a sentence to analyze")
+      return
+    }
+
+    setIsAnalyzing(true)
+    setAnalysisError(null)
+    setAnalysisResult(null)
+
+    try {
+      const result = await analyzeSentence(searchQuery)
+      setAnalysisResult(result)
+      // Update active tense based on analysis
+      if (result.tenseCategory) {
+        setActiveTense(result.tenseCategory)
+      }
+    } catch (error) {
+      console.error("Analysis failed:", error)
+      setAnalysisError(error instanceof Error ? error.message : "Failed to analyze sentence")
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }
 
   const styles = getDifficultyStyles(difficulty)
   const currentTense = tenseData[activeTense]
@@ -248,11 +277,125 @@ export function PlaygroundContent() {
                 placeholder="Type a sentence in your native language..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
                 className="pl-10 h-12 text-base sm:text-lg"
               />
             </div>
-            <Button className="h-12 px-6 w-full sm:w-auto">Analyze</Button>
+            <Button 
+              onClick={handleAnalyze} 
+              disabled={isAnalyzing}
+              className="h-12 px-6 w-full sm:w-auto"
+            >
+              {isAnalyzing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                "Analyze"
+              )}
+            </Button>
           </div>
+
+          {/* Analysis Error */}
+          {analysisError && (
+            <div className="mt-4 p-4 rounded-xl bg-destructive/10 border border-destructive text-destructive">
+              <p className="text-sm">{analysisError}</p>
+            </div>
+          )}
+
+          {/* Analysis Result */}
+          {analysisResult && (
+            <div className="mt-6 space-y-4">
+              <div className={`p-4 rounded-xl ${
+                analysisResult.tenseCategory === "past" 
+                  ? "bg-past-light border-2 border-past" 
+                  : analysisResult.tenseCategory === "present"
+                    ? "bg-present-light border-2 border-present"
+                    : "bg-future-light border-2 border-future"
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      analysisResult.tenseCategory === "past"
+                        ? "bg-past/20 text-past"
+                        : analysisResult.tenseCategory === "present"
+                          ? "bg-present/20 text-present"
+                          : "bg-future/20 text-future"
+                    }`}>
+                      {analysisResult.detectedTense}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {Math.round(analysisResult.confidence * 100)}% confidence
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground">English Translation</p>
+                    <p className="font-medium text-lg">{analysisResult.englishTranslation}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-muted-foreground">Formula</p>
+                    <p className="font-mono bg-background/50 px-2 py-1 rounded inline-block">
+                      {analysisResult.formula}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-muted-foreground">Explanation</p>
+                    <p className="text-sm">{analysisResult.explanation}</p>
+                  </div>
+
+                  {analysisResult.breakdown && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-2">Sentence Breakdown</p>
+                      <div className="flex flex-wrap gap-2">
+                        {analysisResult.breakdown.subject && (
+                          <span className="px-2 py-1 bg-background/50 rounded text-sm">
+                            <strong>Subject:</strong> {analysisResult.breakdown.subject}
+                          </span>
+                        )}
+                        {analysisResult.breakdown.auxiliaryVerb && (
+                          <span className="px-2 py-1 bg-background/50 rounded text-sm">
+                            <strong>Auxiliary:</strong> {analysisResult.breakdown.auxiliaryVerb}
+                          </span>
+                        )}
+                        {analysisResult.breakdown.verb && (
+                          <span className="px-2 py-1 bg-background/50 rounded text-sm">
+                            <strong>Verb:</strong> {analysisResult.breakdown.verb}
+                          </span>
+                        )}
+                        {analysisResult.breakdown.object && (
+                          <span className="px-2 py-1 bg-background/50 rounded text-sm">
+                            <strong>Object:</strong> {analysisResult.breakdown.object}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Alternative Tenses */}
+              {analysisResult.alternativeTenses && analysisResult.alternativeTenses.length > 0 && (
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-muted-foreground">Alternative Tenses</p>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {analysisResult.alternativeTenses.map((alt, index) => (
+                      <div key={index} className="p-3 rounded-lg bg-muted/50 border">
+                        <p className="font-medium text-sm">{alt.tense}</p>
+                        <p className="text-sm mt-1">{alt.sentence}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{alt.usage}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 

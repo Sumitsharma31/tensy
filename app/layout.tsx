@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/components/providers/language-provider"
 import { StreakProvider } from "@/components/providers/streak-provider"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { TenseyChat } from "@/components/chat/tensey-chat"
 import "./globals.css"
 
 const poppins = Poppins({
@@ -264,6 +265,7 @@ export default function RootLayout({
                 <main className="flex-1">{children}</main>
                 <Footer />
               </div>
+              <TenseyChat />
               <Analytics />
             </StreakProvider>
           </LanguageProvider>
