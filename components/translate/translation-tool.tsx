@@ -174,12 +174,12 @@ export function TranslationTool() {
         </CardHeader>
         <CardContent className="space-y-2.5 sm:space-y-3 px-4 pb-4 pt-2 sm:px-6 sm:pb-6 sm:pt-3">
           <div className="space-y-1.5 sm:space-y-2">
-            <label className="text-xs sm:text-sm font-medium">Your Text (Any Language)</label>
+            <label className="pb-2 block text-xs sm:text-sm font-medium">Your Text (Any Language)</label>
             <Textarea
               placeholder="Type or paste your sentence in any language... मैं खाना खाता हूँ | I eat food | Je mange..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              className="min-h-24 sm:min-h-32 text-base sm:text-lg resize-none p-2 sm:p-3"
+              className="min-h-24 sm:min-h-32 text-base sm:text-lg resize-none p-2 sm:p-3 placeholder:text-xs sm:placeholder:text-sm"
             />
             <p className="text-[10px] sm:text-xs text-muted-foreground">
               💡 Our AI will automatically detect your language - just start typing!

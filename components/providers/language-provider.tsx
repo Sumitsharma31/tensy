@@ -22,7 +22,7 @@ const supportedLanguages: Language[] = languagesData.languages
 const isSupported = (code: string): code is LanguageCode => supportedLanguages.some((lang) => lang.code === code)
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<LanguageCode>("en")
+  const [language, setLanguageState] = useState<LanguageCode>("hi")
 
   useEffect(() => {
     try {
