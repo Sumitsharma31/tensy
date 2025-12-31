@@ -6,11 +6,11 @@ import { BookOpen, Gamepad2, Trophy, Lightbulb, Languages, Flame } from "lucide-
 const features = [
   {
     title: "Learn Tenses",
-    description: "Explore all 12 tenses with visual timelines, formulas, and native language support.",
+    description: "Explore all 12 tenses with AI assistance, visual timelines, formulas, and native language support.",
     icon: BookOpen,
     href: "/playground",
     color: "present",
-    badge: "Interactive",
+    badge: "AI-Powered",
   },
   {
     title: "Sentence Builder",
@@ -45,12 +45,12 @@ const features = [
     badge: "Quick Learn",
   },
   {
-    title: "Translate",
-    description: "Translate from your native language to English with tense detection and breakdown.",
+    title: "AI Translate",
+    description: "AI-powered translation from your native language to English with tense detection and breakdown.",
     icon: Languages,
     href: "/translate",
     color: "past",
-    badge: "6 Languages",
+    badge: "AI + 6 Languages",
   },
 ]
 
@@ -61,7 +61,7 @@ export function FeatureCards() {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything You Need to Master Grammar</h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            From playful games to serious practice, our tools adapt to your learning style and level.
+            From AI-powered assistance to playful games, our tools adapt to your learning style and level.
           </p>
         </div>
 

@@ -29,7 +29,7 @@ const jsonLd = {
   name: "Tense Playground",
   alternateName: ["TensePlayground", "Tense-Playground"],
   description:
-    "Tense Playground is a free interactive English grammar learning platform. Master all 12 English tenses through games, quizzes, and exercises. Perfect for ESL learners, students, and anyone wanting to improve their English grammar skills.",
+    "Tense Playground is a free AI-powered English grammar learning platform. Master all 12 English tenses through interactive games, quizzes, AI-assisted learning, and exercises. Perfect for ESL learners, students, and anyone wanting to improve their English grammar skills.",
   url: "https://tense-playground.vercel.app",
   applicationCategory: "EducationalApplication",
   operatingSystem: "Any",
@@ -48,7 +48,7 @@ const jsonLd = {
     url: "https://tense-playground.vercel.app",
   },
   keywords:
-    "Tense Playground, English tenses, grammar games, learn English tenses, ESL grammar, verb tenses practice",
+    "Tense Playground, English tenses, grammar games, learn English tenses, ESL grammar, verb tenses practice, AI grammar learning, AI English tutor",
   inLanguage: "en",
   isAccessibleForFree: true,
   educationalLevel: "Beginner to Advanced",
@@ -63,7 +63,7 @@ const organizationJsonLd = {
   logo: "https://tense-playground.vercel.app/og-image.png",
   sameAs: [],
   description:
-    "Tense Playground - The best free online tool to learn and practice English tenses through interactive games and quizzes.",
+    "Tense Playground - The best free AI-powered online tool to learn and practice English tenses through interactive games, quizzes, and AI assistance.",
 }
 
 const websiteJsonLd = {
@@ -72,23 +72,72 @@ const websiteJsonLd = {
   name: "Tense Playground",
   alternateName: "TensePlayground",
   url: "https://tense-playground.vercel.app",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: "https://tense-playground.vercel.app/search?q={search_term_string}",
+}
+
+// Site Navigation for Google Sitelinks
+const siteNavigationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  itemListElement: [
+    {
+      "@type": "SiteNavigationElement",
+      position: 1,
+      name: "Learn Tenses",
+      description: "Explore all 12 English tenses with AI assistance, visual timelines, and formulas",
+      url: "https://tense-playground.vercel.app/playground",
     },
-    "query-input": "required name=search_term_string",
-  },
+    {
+      "@type": "SiteNavigationElement",
+      position: 2,
+      name: "Grammar Quiz",
+      description: "Test your English grammar with 150+ quiz levels and instant feedback",
+      url: "https://tense-playground.vercel.app/quiz",
+    },
+    {
+      "@type": "SiteNavigationElement",
+      position: 3,
+      name: "Sentence Builder Game",
+      description: "Drag and drop words to build correct English sentences",
+      url: "https://tense-playground.vercel.app/builder",
+    },
+    {
+      "@type": "SiteNavigationElement",
+      position: 4,
+      name: "Word Rainfall Game",
+      description: "Catch falling words in the right order to form sentences",
+      url: "https://tense-playground.vercel.app/game/rainfall",
+    },
+    {
+      "@type": "SiteNavigationElement",
+      position: 5,
+      name: "AI Translate",
+      description: "AI-powered translation with tense detection and grammar breakdown",
+      url: "https://tense-playground.vercel.app/translate",
+    },
+    {
+      "@type": "SiteNavigationElement",
+      position: 6,
+      name: "Daily Challenges",
+      description: "Complete daily grammar challenges to earn XP and maintain streaks",
+      url: "https://tense-playground.vercel.app/challenges",
+    },
+    {
+      "@type": "SiteNavigationElement",
+      position: 7,
+      name: "Tips & Tricks",
+      description: "Memorable grammar rules and quick tips to master English tenses",
+      url: "https://tense-playground.vercel.app/tips",
+    },
+  ],
 }
 
 export const metadata: Metadata = {
   title: {
-    default: "Tense Playground – Learn & Practice English Tenses | Free Grammar Games & Quizzes",
+    default: "Tense Playground – AI-Powered English Tenses Learning | Free Grammar Games & Quizzes",
     template: "%s | Tense Playground",
   },
   description:
-    "Tense Playground is a free interactive platform to master all 12 English tenses. Learn past, present, and future tenses through fun grammar games, quizzes, and exercises. Perfect for ESL learners and students.",
+    "Tense Playground is a free AI-powered platform to master all 12 English tenses. Learn past, present, and future tenses through fun grammar games, quizzes, AI chat assistance, and interactive exercises. Perfect for ESL learners and students.",
   keywords: [
     "Tense Playground",
     "tense playground",
@@ -114,6 +163,10 @@ export const metadata: Metadata = {
     "interactive English learning",
     "tense practice online",
     "learn grammar online free",
+    "AI grammar learning",
+    "AI English tutor",
+    "AI-powered grammar",
+    "grammar AI assistant",
   ],
   authors: [{ name: "Dharmendra Kumar" }],
   creator: "Tense Playground",
@@ -134,9 +187,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://tense-playground.vercel.app",
-    title: "Tense Playground – Learn & Practice English Tenses Free",
+    title: "Tense Playground – AI-Powered English Tenses Learning Free",
     description:
-      "Tense Playground is the best free tool to master English tenses. Play grammar games, take quizzes, and practice all 12 tenses interactively!",
+      "Tense Playground is the best free AI-powered tool to master English tenses. Play grammar games, chat with AI tutor, take quizzes, and practice all 12 tenses interactively!",
     siteName: "Tense Playground",
     images: [
       {
@@ -150,9 +203,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tense Playground – Learn English Tenses Free",
+    title: "Tense Playground – AI-Powered English Tenses Learning",
     description:
-      "Master all 12 English tenses through interactive games and quizzes. Free grammar learning platform!",
+      "Master all 12 English tenses through interactive games, AI chat assistance, and quizzes. Free AI-powered grammar learning platform!",
     images: ["https://tense-playground.vercel.app/og-image.png"],
     creator: "@tenseplayground",
     site: "@tenseplayground",
@@ -172,12 +225,15 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "any" },
       {
         url: "/icon-light-32x32.png",
+        sizes: "32x32",
         media: "(prefers-color-scheme: light)",
       },
       {
         url: "/icon-dark-32x32.png",
+        sizes: "32x32",
         media: "(prefers-color-scheme: dark)",
       },
       {
@@ -185,6 +241,7 @@ export const metadata: Metadata = {
         type: "image/svg+xml",
       },
     ],
+    shortcut: "/favicon.ico",
     apple: "/apple-icon.png",
   },
   manifest: "/manifest.json",
@@ -229,6 +286,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavigationJsonLd) }}
         />
         
         {/* Additional SEO Meta Tags */}

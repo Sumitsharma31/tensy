@@ -278,7 +278,7 @@ export function PlaygroundContent() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
-                className="pl-10 h-12 text-base sm:text-lg"
+                className="pl-10 h-12 text-base sm:text-lg placeholder:text-xs sm:placeholder:text-sm"
               />
             </div>
             <Button 
@@ -631,7 +631,7 @@ function PracticeSection({
             placeholder="Type your answer..."
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            className="h-12 flex-1"
+            className="h-12 flex-1 placeholder:text-xs sm:placeholder:text-sm"
           />
           <Button onClick={handleCheck} className="h-12 px-6 w-full sm:w-auto">
             Check

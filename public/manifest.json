@@ -1,7 +1,7 @@
 {
   "name": "Tense Playground",
   "short_name": "Tense Play",
-  "description": "Master English tenses through interactive games, quizzes, and exercises. Learn grammar the fun way!",
+  "description": "Master English tenses through AI-powered learning, interactive games, quizzes, and exercises. Learn grammar the fun way with AI assistance!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
