@@ -250,10 +250,8 @@ export function QuizSystem() {
       setUserInput( "" )
     } else {
       // Level completed - show result screen
-      const finalScore = score + ( question.type === "mcq"
-        ? ( selectedAnswer === ( question as MCQQuestion ).correct ? 1 : 0 )
-        : ( ( selectedAnswer as string )?.toLowerCase().trim() === ( question as CorrectionQuestion ).correct.toLowerCase().trim() ? 1 : 0 ) )
-      const percentage = Math.round( ( finalScore / level.questions.length ) * 100 )
+      // Note: score is already updated by handleAnswer, no need to add again
+      const percentage = Math.round( ( score / level.questions.length ) * 100 )
       const newLevels = {
         ...completedLevels,
         [difficulty]: {
@@ -281,7 +279,7 @@ export function QuizSystem() {
 
       setView( "result" )
     }
-  }, [currentQuestion, level, currentLevel, difficulty, completedLevels, saveCompletedLevels, score, question, selectedAnswer, recordTenseCompleted, recordPerfectScore, recordEasyLevelComplete] )
+  }, [currentQuestion, level, currentLevel, difficulty, completedLevels, saveCompletedLevels, score, recordTenseCompleted, recordPerfectScore, recordEasyLevelComplete] )
 
   const startLevel = ( levelNum: number ) => {
     if ( !isLevelUnlocked( levelNum ) ) return
