@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/components/providers/language-provider"
 import { StreakProvider } from "@/components/providers/streak-provider"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { TenseyChat } from "@/components/chat/tensey-chat"
 import "./globals.css"
 
 const poppins = Poppins({
@@ -21,30 +22,100 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 })
 
+// JSON-LD Structured Data for better SEO
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Tense Playground",
+  alternateName: ["TensePlayground", "Tense-Playground"],
+  description:
+    "Tense Playground is a free interactive English grammar learning platform. Master all 12 English tenses through games, quizzes, and exercises. Perfect for ESL learners, students, and anyone wanting to improve their English grammar skills.",
+  url: "https://tense-playground.vercel.app",
+  applicationCategory: "EducationalApplication",
+  operatingSystem: "Any",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  author: {
+    "@type": "Person",
+    name: "Dharmendra Kumar",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Tense Playground",
+    url: "https://tense-playground.vercel.app",
+  },
+  keywords:
+    "Tense Playground, English tenses, grammar games, learn English tenses, ESL grammar, verb tenses practice",
+  inLanguage: "en",
+  isAccessibleForFree: true,
+  educationalLevel: "Beginner to Advanced",
+  learningResourceType: ["Interactive Game", "Quiz", "Exercise"],
+}
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Tense Playground",
+  url: "https://tense-playground.vercel.app",
+  logo: "https://tense-playground.vercel.app/og-image.png",
+  sameAs: [],
+  description:
+    "Tense Playground - The best free online tool to learn and practice English tenses through interactive games and quizzes.",
+}
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Tense Playground",
+  alternateName: "TensePlayground",
+  url: "https://tense-playground.vercel.app",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://tense-playground.vercel.app/search?q={search_term_string}",
+    },
+    "query-input": "required name=search_term_string",
+  },
+}
+
 export const metadata: Metadata = {
   title: {
-    default: "Tense Playground | Master English Tenses",
+    default: "Tense Playground – Learn & Practice English Tenses | Free Grammar Games & Quizzes",
     template: "%s | Tense Playground",
   },
   description:
-    "Master English tenses through interactive games, quizzes, and exercises. Learn past, present, and future tenses with fun grammar challenges. Free English learning tool for students and learners.",
+    "Tense Playground is a free interactive platform to master all 12 English tenses. Learn past, present, and future tenses through fun grammar games, quizzes, and exercises. Perfect for ESL learners and students.",
   keywords: [
+    "Tense Playground",
+    "tense playground",
+    "TensePlayground",
     "English grammar",
-    "tenses",
-    "learn English",
-    "grammar games",
     "English tenses",
+    "learn English tenses",
+    "grammar games",
+    "tense games",
     "past tense",
     "present tense",
     "future tense",
+    "perfect tense",
+    "continuous tense",
     "grammar quiz",
     "English learning",
-    "ESL",
+    "ESL grammar",
     "grammar practice",
     "verb tenses",
     "English exercises",
+    "free English learning",
+    "online grammar games",
+    "interactive English learning",
+    "tense practice online",
+    "learn grammar online free",
   ],
-  authors: [{ name: "Tense Playground" }],
+  authors: [{ name: "Dharmendra Kumar" }],
   creator: "Tense Playground",
   publisher: "Tense Playground",
   generator: "Next.js",
@@ -57,39 +128,43 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://tense-playground.vercel.app"),
   alternates: {
-    canonical: "/",
+    canonical: "https://tense-playground.vercel.app",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "/",
-    title: "Tense Playground | Master English Tenses",
+    url: "https://tense-playground.vercel.app",
+    title: "Tense Playground – Learn & Practice English Tenses Free",
     description:
-      "Master English tenses through interactive games, quizzes, and exercises. Learn grammar the fun way!",
+      "Tense Playground is the best free tool to master English tenses. Play grammar games, take quizzes, and practice all 12 tenses interactively!",
     siteName: "Tense Playground",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://tense-playground.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Tense Playground - Learn English Tenses",
+        alt: "Tense Playground - Free English Tenses Learning Platform",
+        type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tense Playground | Master English Tenses",
+    title: "Tense Playground – Learn English Tenses Free",
     description:
-      "Master English tenses through interactive games, quizzes, and exercises. Learn grammar the fun way!",
-    images: ["/og-image.png"],
+      "Master all 12 English tenses through interactive games and quizzes. Free grammar learning platform!",
+    images: ["https://tense-playground.vercel.app/og-image.png"],
     creator: "@tenseplayground",
+    site: "@tenseplayground",
   },
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
@@ -114,6 +189,15 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   category: "education",
+  verification: {
+    google: "6s1zvqQYarzATN68TYLQqk3G5xtx7d1tt7gGzm4aWzE",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "apple-mobile-web-app-title": "Tense Playground",
+  },
 }
 
 export const viewport: Viewport = {
@@ -133,7 +217,32 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="google-site-verification" content="6s1zvqQYarzATN68TYLQqk3G5xtx7d1tt7gGzm4aWzE" />
+        {/* JSON-LD Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        
+        {/* Additional SEO Meta Tags */}
+        <meta name="subject" content="English Grammar Learning - Tense Playground" />
+        <meta name="language" content="en" />
+        <meta name="rating" content="General" />
+        <meta name="distribution" content="Global" />
+        <meta name="revisit-after" content="7 days" />
+        <meta name="copyright" content="Tense Playground" />
+        
+        {/* Preconnect for performance */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-DHFVGETWWL"
           strategy="afterInteractive"
@@ -156,6 +265,7 @@ export default function RootLayout({
                 <main className="flex-1">{children}</main>
                 <Footer />
               </div>
+              <TenseyChat />
               <Analytics />
             </StreakProvider>
           </LanguageProvider>

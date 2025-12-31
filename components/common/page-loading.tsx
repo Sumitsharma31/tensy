@@ -42,3 +42,7 @@ export function PlaygroundLoading() {
 export function RainfallLoading() {
   return <PageLoading title="Loading Word Rainfall" subtitle="Get ready to catch words..." />
 }
+
+export function TranslateLoading() {
+  return <PageLoading title="Loading Translator" subtitle="Preparing translation tools..." />
+}
