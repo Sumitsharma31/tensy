@@ -45,7 +45,7 @@ export function HeroSection() {
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
           <Badge variant="secondary" className="mb-6 gap-2 px-4 py-2 text-sm">
             <Sparkles className="h-4 w-4 text-future" />
-            Learn English Grammar the Fun Way
+            AI-Powered English Grammar Learning
           </Badge>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-balance mb-6">
