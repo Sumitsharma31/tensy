@@ -10,6 +10,7 @@ import { FormulaCard } from "@/components/tense/formula-card"
 import { ExampleList } from "@/components/tense/example-list"
 import { DifficultyTabs } from "@/components/common/difficulty-tabs"
 import { useChallenges } from "@/hooks/use-challenges"
+import { useLanguage } from "@/components/providers/language-provider"
 import { Search, BookOpen, FlaskConical, PenLine, Volume2, RefreshCw, Loader2 } from "lucide-react"
 import type { Difficulty } from "@/lib/difficulty-styles"
 import { getDifficultyStyles } from "@/lib/difficulty-styles"
@@ -487,6 +488,7 @@ function PracticeSection({
   const [showResult, setShowResult] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const { language } = useLanguage()
 
   const speak = (text: string) => {
     speakText(text, {
@@ -541,6 +543,8 @@ function PracticeSection({
     explanation: currentSentence.quiz.explanation,
     title: currentSentence.title,
     tenseInfo: currentSentence.tense,
+    translations: currentSentence.translations,
+    learningFocus: currentSentence.learningFocus,
   }
 
   const handleNextQuestion = () => {
@@ -621,9 +625,16 @@ function PracticeSection({
             </Button>
           </div>
           {/* Formula hint */}
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-muted-foreground">
             Formula: {currentQuestion.tenseInfo.formula}
           </p>
+          {/* Hint: Translation */}
+          {currentQuestion.translations?.[language] && (
+            <span className="inline-flex items-center gap-1 mt-2 px-3 py-2 text-xs bg-background/60 rounded-full border">
+              <span className="text-muted-foreground font-bold">Hint:</span>
+              <span>{currentQuestion.translations[language]}</span>
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
