@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ThemeSwitch } from "@/components/common/theme-switch"
 import { LanguageToggle } from "@/components/common/language-toggle"
+import { AuthButtons } from "@/components/auth/AuthButtons"
 import { useStreakContext } from "@/components/providers/streak-provider"
 import { cn } from "@/lib/utils"
 import { BookOpen, Gamepad2, Trophy, Lightbulb, Languages, Menu, X, Flame } from "lucide-react"
@@ -60,6 +61,7 @@ export function Header() {
             </Link>
             <LanguageToggle />
             <ThemeSwitch />
+            <AuthButtons />
 
             {/* Mobile Menu Button */}
             <Button

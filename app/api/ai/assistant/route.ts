@@ -20,6 +20,7 @@ Guidelines:
 - Return ONLY valid JSON, no markdown or extra text`;
 
 export async function POST(request: NextRequest) {
+  console.log('🤖 AI Assistant API hit')
   try {
     // Check for API key
     if (!process.env.GEMINI_API_KEY) {
@@ -40,11 +41,11 @@ export async function POST(request: NextRequest) {
     }
 
     let prompt = "";
-    
+
     if (context) {
       prompt += `Context: ${context}\n\n`;
     }
-    
+
     prompt += `User's question: "${question}"\n\nRespond with ONLY the JSON object, no additional text.`;
 
     const ai = new GoogleGenAI({});
@@ -58,16 +59,16 @@ export async function POST(request: NextRequest) {
     });
 
     const text = response.text ?? "";
-    
+
     // Extract JSON from the response
     let jsonText = text;
-    
+
     // Remove markdown code blocks if present
     const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     if (jsonMatch) {
       jsonText = jsonMatch[1];
     }
-    
+
     // Try to parse the JSON
     try {
       const assistantResponse = JSON.parse(jsonText.trim());
@@ -75,9 +76,9 @@ export async function POST(request: NextRequest) {
     } catch (parseError) {
       console.error("Failed to parse AI response:", text);
       return NextResponse.json(
-        { 
+        {
           error: "Failed to parse AI response",
-          rawResponse: text 
+          rawResponse: text
         },
         { status: 500 }
       );
@@ -85,8 +86,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error in assistant API:", error);
     return NextResponse.json(
-      { 
-        error: error instanceof Error ? error.message : "An unexpected error occurred" 
+      {
+        error: error instanceof Error ? error.message : "An unexpected error occurred"
       },
       { status: 500 }
     );

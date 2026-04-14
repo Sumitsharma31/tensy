@@ -16,11 +16,14 @@ import {
     Lightbulb,
     BookOpen,
     Trash2,
+    Volume2,
+    StopCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { askAiAssistant, type AiAssistantResponse } from '@/services/ai-service'
+import { useVoiceSettings } from '@/hooks/use-voice-settings'
 
 interface Message {
     id: string
@@ -55,61 +58,61 @@ Your English grammar assistant!
 }
 
 // Simple markdown renderer for chat messages
-function renderMarkdown( content: string ): React.ReactNode {
-    const lines = content.split( '\n' )
+function renderMarkdown(content: string): React.ReactNode {
+    const lines = content.split('\n')
     const elements: React.ReactNode[] = []
     let listItems: string[] = []
     let inCodeBlock = false
     let codeContent = ''
     let codeLanguage = ''
 
-    const processInlineElements = ( text: string ): React.ReactNode => {
+    const processInlineElements = (text: string): React.ReactNode => {
         // Process bold, italic, code, and links
         const parts: React.ReactNode[] = []
         let remaining = text
         let key = 0
 
-        while ( remaining ) {
+        while (remaining) {
             // Bold **text**
-            const boldMatch = remaining.match( /\*\*(.+?)\*\*/ )
+            const boldMatch = remaining.match(/\*\*(.+?)\*\*/)
             // Italic *text*
-            const italicMatch = remaining.match( /(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/ )
+            const italicMatch = remaining.match(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/)
             // Inline code `code`
-            const codeMatch = remaining.match( /`([^`]+)`/ )
+            const codeMatch = remaining.match(/`([^`]+)`/)
             // Links [text](url)
-            const linkMatch = remaining.match( /\[([^\]]+)\]\(([^)]+)\)/ )
+            const linkMatch = remaining.match(/\[([^\]]+)\]\(([^)]+)\)/)
 
             const matches = [
                 { type: 'bold', match: boldMatch, index: boldMatch?.index ?? Infinity },
                 { type: 'italic', match: italicMatch, index: italicMatch?.index ?? Infinity },
                 { type: 'code', match: codeMatch, index: codeMatch?.index ?? Infinity },
                 { type: 'link', match: linkMatch, index: linkMatch?.index ?? Infinity },
-            ].filter( m => m.match ).sort( ( a, b ) => a.index - b.index )
+            ].filter(m => m.match).sort((a, b) => a.index - b.index)
 
-            if ( matches.length === 0 ) {
-                parts.push( remaining )
+            if (matches.length === 0) {
+                parts.push(remaining)
                 break
             }
 
             const first = matches[0]
-            if ( first.index > 0 ) {
-                parts.push( remaining.slice( 0, first.index ) )
+            if (first.index > 0) {
+                parts.push(remaining.slice(0, first.index))
             }
 
-            if ( first.type === 'bold' && first.match ) {
-                parts.push( <strong key={key++} className="font-semibold">{first.match[1]}</strong> )
-                remaining = remaining.slice( first.index + first.match[0].length )
-            } else if ( first.type === 'italic' && first.match ) {
-                parts.push( <em key={key++} className="italic">{first.match[1]}</em> )
-                remaining = remaining.slice( first.index + first.match[0].length )
-            } else if ( first.type === 'code' && first.match ) {
+            if (first.type === 'bold' && first.match) {
+                parts.push(<strong key={key++} className="font-semibold">{first.match[1]}</strong>)
+                remaining = remaining.slice(first.index + first.match[0].length)
+            } else if (first.type === 'italic' && first.match) {
+                parts.push(<em key={key++} className="italic">{first.match[1]}</em>)
+                remaining = remaining.slice(first.index + first.match[0].length)
+            } else if (first.type === 'code' && first.match) {
                 parts.push(
                     <code key={key++} className="px-1.5 py-0.5 rounded bg-muted text-sm font-mono text-primary">
                         {first.match[1]}
                     </code>
                 )
-                remaining = remaining.slice( first.index + first.match[0].length )
-            } else if ( first.type === 'link' && first.match ) {
+                remaining = remaining.slice(first.index + first.match[0].length)
+            } else if (first.type === 'link' && first.match) {
                 parts.push(
                     <a
                         key={key++}
@@ -121,7 +124,7 @@ function renderMarkdown( content: string ): React.ReactNode {
                         {first.match[1]}
                     </a>
                 )
-                remaining = remaining.slice( first.index + first.match[0].length )
+                remaining = remaining.slice(first.index + first.match[0].length)
             }
         }
 
@@ -129,27 +132,27 @@ function renderMarkdown( content: string ): React.ReactNode {
     }
 
     const flushListItems = () => {
-        if ( listItems.length > 0 ) {
+        if (listItems.length > 0) {
             elements.push(
                 <ul key={elements.length} className="list-disc list-inside space-y-0.5 my-1 ml-1">
-                    {listItems.map( ( item, i ) => (
-                        <li key={i} className="text-xs">{processInlineElements( item )}</li>
-                    ) )}
+                    {listItems.map((item, i) => (
+                        <li key={i} className="text-xs">{processInlineElements(item)}</li>
+                    ))}
                 </ul>
             )
             listItems = []
         }
     }
 
-    for ( let i = 0; i < lines.length; i++ ) {
+    for (let i = 0; i < lines.length; i++) {
         const line = lines[i]
 
         // Code blocks
-        if ( line.startsWith( '```' ) ) {
-            if ( !inCodeBlock ) {
+        if (line.startsWith('```')) {
+            if (!inCodeBlock) {
                 flushListItems()
                 inCodeBlock = true
-                codeLanguage = line.slice( 3 ).trim()
+                codeLanguage = line.slice(3).trim()
                 codeContent = ''
             } else {
                 elements.push(
@@ -164,57 +167,57 @@ function renderMarkdown( content: string ): React.ReactNode {
             continue
         }
 
-        if ( inCodeBlock ) {
+        if (inCodeBlock) {
             codeContent += line + '\n'
             continue
         }
 
         // Headers
-        if ( line.startsWith( '### ' ) ) {
+        if (line.startsWith('### ')) {
             flushListItems()
             elements.push(
                 <h3 key={elements.length} className="text-sm font-semibold mt-2 mb-0.5">
-                    {processInlineElements( line.slice( 4 ) )}
+                    {processInlineElements(line.slice(4))}
                 </h3>
             )
             continue
         }
-        if ( line.startsWith( '## ' ) ) {
+        if (line.startsWith('## ')) {
             flushListItems()
             elements.push(
                 <h2 key={elements.length} className="text-sm font-bold mt-2 mb-0.5">
-                    {processInlineElements( line.slice( 3 ) )}
+                    {processInlineElements(line.slice(3))}
                 </h2>
             )
             continue
         }
-        if ( line.startsWith( '# ' ) ) {
+        if (line.startsWith('# ')) {
             flushListItems()
             elements.push(
                 <h1 key={elements.length} className="text-base font-bold mt-1 mb-1">
-                    {processInlineElements( line.slice( 2 ) )}
+                    {processInlineElements(line.slice(2))}
                 </h1>
             )
             continue
         }
 
         // List items
-        if ( line.match( /^[-*] / ) ) {
-            listItems.push( line.slice( 2 ) )
+        if (line.match(/^[-*] /)) {
+            listItems.push(line.slice(2))
             continue
         }
 
         // Numbered list
-        if ( line.match( /^\d+\. / ) ) {
-            const content = line.replace( /^\d+\. /, '' )
-            listItems.push( content )
+        if (line.match(/^\d+\. /)) {
+            const content = line.replace(/^\d+\. /, '')
+            listItems.push(content)
             continue
         }
 
         // Empty line
-        if ( line.trim() === '' ) {
+        if (line.trim() === '') {
             flushListItems()
-            elements.push( <div key={elements.length} className="h-2" /> )
+            elements.push(<div key={elements.length} className="h-2" />)
             continue
         }
 
@@ -222,7 +225,7 @@ function renderMarkdown( content: string ): React.ReactNode {
         flushListItems()
         elements.push(
             <p key={elements.length} className="text-xs leading-relaxed">
-                {processInlineElements( line )}
+                {processInlineElements(line)}
             </p>
         )
     }
@@ -233,31 +236,35 @@ function renderMarkdown( content: string ): React.ReactNode {
 }
 
 export function TenseyChat() {
-    const [isOpen, setIsOpen] = useState( false )
-    const [isExpanded, setIsExpanded] = useState( false )
-    const [messages, setMessages] = useState<Message[]>( [WELCOME_MESSAGE] )
-    const [input, setInput] = useState( '' )
-    const [isLoading, setIsLoading] = useState( false )
-    const messagesEndRef = useRef<HTMLDivElement>( null )
-    const inputRef = useRef<HTMLInputElement>( null )
+    const [isOpen, setIsOpen] = useState(false)
+    const [isExpanded, setIsExpanded] = useState(false)
+    const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE])
+    const [input, setInput] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const inputRef = useRef<HTMLInputElement>(null)
+    const { speak, stop, isPlaying } = useVoiceSettings()
+    const [playingMessageId, setPlayingMessageId] = useState<string | null>(null)
 
-    const scrollToBottom = useCallback( () => {
-        messagesEndRef.current?.scrollIntoView( { behavior: 'smooth' } )
-    }, [] )
+    const scrollToBottom = useCallback(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }, [])
 
-    useEffect( () => {
+    useEffect(() => {
         scrollToBottom()
-    }, [messages, scrollToBottom] )
+    }, [messages, scrollToBottom])
 
-    useEffect( () => {
-        if ( isOpen && inputRef.current ) {
+    useEffect(() => {
+        if (isOpen && inputRef.current) {
             inputRef.current.focus()
+        } else if (!isOpen) {
+            stop()
         }
-    }, [isOpen] )
+    }, [isOpen, stop])
 
-    const handleSend = async ( messageText?: string ) => {
+    const handleSend = async (messageText?: string) => {
         const text = messageText || input.trim()
-        if ( !text || isLoading ) return
+        if (!text || isLoading) return
 
         const userMessage: Message = {
             id: Date.now().toString(),
@@ -266,15 +273,15 @@ export function TenseyChat() {
             timestamp: new Date(),
         }
 
-        setMessages( prev => [...prev, userMessage] )
-        setInput( '' )
-        setIsLoading( true )
+        setMessages(prev => [...prev, userMessage])
+        setInput('')
+        setIsLoading(true)
 
         try {
-            const response: AiAssistantResponse = await askAiAssistant( text )
+            const response: AiAssistantResponse = await askAiAssistant(text)
 
             const assistantMessage: Message = {
-                id: ( Date.now() + 1 ).toString(),
+                id: (Date.now() + 1).toString(),
                 role: 'assistant',
                 content: response.reply,
                 suggestions: response.suggestions,
@@ -282,34 +289,54 @@ export function TenseyChat() {
                 timestamp: new Date(),
             }
 
-            setMessages( prev => [...prev, assistantMessage] )
-        } catch ( error ) {
+            setMessages(prev => [...prev, assistantMessage])
+        } catch (error) {
             const errorMessage: Message = {
-                id: ( Date.now() + 1 ).toString(),
+                id: (Date.now() + 1).toString(),
                 role: 'assistant',
                 content: "I'm sorry, I encountered an error. Please try again! 🙏",
                 timestamp: new Date(),
             }
-            setMessages( prev => [...prev, errorMessage] )
+            setMessages(prev => [...prev, errorMessage])
         } finally {
-            setIsLoading( false )
+            setIsLoading(false)
         }
     }
 
-    const handleKeyDown = ( e: React.KeyboardEvent ) => {
-        if ( e.key === 'Enter' && !e.shiftKey ) {
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault()
             handleSend()
         }
     }
 
     const clearChat = () => {
-        setMessages( [WELCOME_MESSAGE] )
+        setMessages([WELCOME_MESSAGE])
     }
 
-    const handleSuggestionClick = ( suggestion: string ) => {
-        handleSend( suggestion )
+    const handleSuggestionClick = (suggestion: string) => {
+        handleSend(suggestion)
     }
+
+    const handleReadAloud = (messageId: string, text: string) => {
+        if (isPlaying && playingMessageId === messageId) {
+            stop()
+            setPlayingMessageId(null)
+        } else {
+            // Stop any current speech first if playing another message
+            if (isPlaying) stop()
+
+            setPlayingMessageId(messageId)
+            speak(text)
+        }
+    }
+
+    // Sync local playing state with global audio state
+    useEffect(() => {
+        if (!isPlaying) {
+            setPlayingMessageId(null)
+        }
+    }, [isPlaying])
 
     return (
         <LayoutGroup>
@@ -322,7 +349,7 @@ export function TenseyChat() {
                         exit={{ scale: 0, opacity: 0 }}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => setIsOpen( true )}
+                        onClick={() => setIsOpen(true)}
                         className="fixed bottom-4 right-4 z-50 flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-linear-to-br from-primary via-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-shadow"
                         aria-label="Open Tensey Chat"
                     >
@@ -342,9 +369,9 @@ export function TenseyChat() {
                 {isOpen && (
                     <motion.div
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                        animate={{ 
-                            opacity: 1, 
-                            y: 0, 
+                        animate={{
+                            opacity: 1,
+                            y: 0,
                             scale: 1,
                             transition: { type: 'spring', damping: 25, stiffness: 300 }
                         }}
@@ -359,7 +386,7 @@ export function TenseyChat() {
                         )}
                     >
                         {/* Header */}
-                        <motion.div 
+                        <motion.div
                             layout="position"
                             className="shrink-0 flex items-center justify-between px-3 py-2 bg-linear-to-r from-primary/10 via-primary/5 to-transparent border-b border-border rounded-t-2xl"
                         >
@@ -391,7 +418,7 @@ export function TenseyChat() {
                                 <Button
                                     variant="ghost"
                                     size="icon-sm"
-                                    onClick={() => setIsExpanded( !isExpanded )}
+                                    onClick={() => setIsExpanded(!isExpanded)}
                                     className="text-muted-foreground hover:text-foreground"
                                     title={isExpanded ? 'Minimize' : 'Expand'}
                                 >
@@ -405,8 +432,8 @@ export function TenseyChat() {
                                     variant="ghost"
                                     size="icon-sm"
                                     onClick={() => {
-                                        setIsOpen( false )
-                                        setIsExpanded( false )
+                                        setIsOpen(false)
+                                        setIsExpanded(false)
                                     }}
                                     className="text-muted-foreground hover:text-foreground"
                                     title="Close"
@@ -417,13 +444,13 @@ export function TenseyChat() {
                         </motion.div>
 
                         {/* Messages */}
-                        <motion.div 
+                        <motion.div
                             layout
                             className="flex-1 overflow-hidden"
                         >
                             <ScrollArea className="h-full">
                                 <div className="p-3 space-y-3">
-                                    {messages.map( ( message ) => (
+                                    {messages.map((message) => (
                                         <motion.div
                                             key={message.id}
                                             initial={{ opacity: 0, y: 10 }}
@@ -467,46 +494,72 @@ export function TenseyChat() {
                                                     {message.role === 'user' ? (
                                                         <p className="text-xs">{message.content}</p>
                                                     ) : (
-                                                        renderMarkdown( message.content )
+                                                        renderMarkdown(message.content)
                                                     )}
                                                 </div>
+
+                                                {/* Read Aloud Button - Only for assistant messages */}
+                                                {message.role === 'assistant' && (
+                                                    <button
+                                                        onClick={() => handleReadAloud(message.id, message.content)}
+                                                        className={cn(
+                                                            "mt-1 flex items-center gap-1 px-2 py-1 text-[10px] rounded-full transition-colors",
+                                                            isPlaying && playingMessageId === message.id
+                                                                ? "bg-primary/10 text-primary"
+                                                                : "bg-muted/30 text-muted-foreground hover:bg-muted hover:text-foreground"
+                                                        )}
+                                                        title={isPlaying && playingMessageId === message.id ? "Stop" : "Read Aloud"}
+                                                    >
+                                                        {isPlaying && playingMessageId === message.id ? (
+                                                            <>
+                                                                <StopCircle className="w-3 h-3" />
+                                                                <span>Stop</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Volume2 className="w-3 h-3" />
+                                                                <span>Read Aloud</span>
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                )}
 
                                                 {/* Suggestions */}
                                                 {message.role === 'assistant' && message.suggestions && message.suggestions.length > 0 && (
                                                     <div className="mt-2 flex flex-wrap gap-1.5">
-                                                        {message.suggestions.map( ( suggestion, index ) => (
+                                                        {message.suggestions.map((suggestion, index) => (
                                                             <button
                                                                 key={index}
-                                                                onClick={() => handleSuggestionClick( suggestion )}
+                                                                onClick={() => handleSuggestionClick(suggestion)}
                                                                 disabled={isLoading}
                                                                 className="inline-flex items-center gap-1 px-2 py-1 text-[10px] bg-background border border-border rounded-full hover:bg-accent hover:border-primary/30 transition-colors disabled:opacity-50"
                                                             >
                                                                 <Lightbulb className="w-2.5 h-2.5 text-yellow-500" />
                                                                 {suggestion}
                                                             </button>
-                                                        ) )}
+                                                        ))}
                                                     </div>
                                                 )}
 
                                                 {/* Related Topics */}
                                                 {message.role === 'assistant' && message.relatedTopics && message.relatedTopics.length > 0 && (
                                                     <div className="mt-1.5 flex flex-wrap gap-1">
-                                                        {message.relatedTopics.map( ( topic, index ) => (
+                                                        {message.relatedTopics.map((topic, index) => (
                                                             <button
                                                                 key={index}
-                                                                onClick={() => handleSuggestionClick( `Tell me about ${topic}` )}
+                                                                onClick={() => handleSuggestionClick(`Tell me about ${topic}`)}
                                                                 disabled={isLoading}
                                                                 className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] text-muted-foreground hover:text-foreground bg-muted/30 rounded hover:bg-muted transition-colors disabled:opacity-50"
                                                             >
                                                                 <BookOpen className="w-2.5 h-2.5" />
                                                                 {topic}
                                                             </button>
-                                                        ) )}
+                                                        ))}
                                                     </div>
                                                 )}
                                             </div>
                                         </motion.div>
-                                    ) )}
+                                    ))}
 
                                     {/* Loading indicator */}
                                     {isLoading && (
@@ -533,7 +586,7 @@ export function TenseyChat() {
                         </motion.div>
 
                         {/* Input Area */}
-                        <motion.div 
+                        <motion.div
                             layout="position"
                             className="shrink-0 p-3 border-t border-border bg-muted/30 rounded-b-2xl"
                         >
@@ -543,7 +596,7 @@ export function TenseyChat() {
                                         ref={inputRef}
                                         type="text"
                                         value={input}
-                                        onChange={( e ) => setInput( e.target.value )}
+                                        onChange={(e) => setInput(e.target.value)}
                                         onKeyDown={handleKeyDown}
                                         placeholder="Ask about tenses..."
                                         disabled={isLoading}

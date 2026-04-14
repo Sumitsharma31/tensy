@@ -2,11 +2,13 @@ import { DifficultyTabs } from "@/components/common/difficulty-tabs"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Maximize, Minimize, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react"
-import { type DifficultyLevel } from "./types"
+import { type DifficultyLevel, type GameMode } from "./types" // Import from types
 
 interface ControlsHeaderProps {
   difficulty: DifficultyLevel
   onDifficultyChange: (difficulty: DifficultyLevel) => void
+  gameMode: GameMode // New prop
+  onGameModeChange: (mode: GameMode) => void // New prop
   difficultyDisabled: boolean
   isFullscreen: boolean
   toggleFullscreen: () => void
@@ -22,6 +24,8 @@ interface ControlsHeaderProps {
 export function ControlsHeader({
   difficulty,
   onDifficultyChange,
+  gameMode,
+  onGameModeChange,
   difficultyDisabled,
   isFullscreen,
   toggleFullscreen,
@@ -41,12 +45,35 @@ export function ControlsHeader({
         className,
       )}
     >
-      <DifficultyTabs
-        value={difficulty}
-        onValueChange={onDifficultyChange}
-        disabled={difficultyDisabled}
-        className="w-full sm:w-auto"
-      />
+      <div className="flex flex-wrap gap-3 items-center w-full sm:w-auto">
+        <DifficultyTabs
+          value={difficulty}
+          onValueChange={onDifficultyChange}
+          disabled={difficultyDisabled}
+          className="w-full sm:w-auto"
+        />
+
+        <div className="flex items-center border rounded-lg p-1 bg-muted/50">
+          <Button
+            variant={gameMode === "sentence" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => onGameModeChange("sentence")}
+            disabled={difficultyDisabled}
+            className="h-7 text-xs"
+          >
+            Sentence
+          </Button>
+          <Button
+            variant={gameMode === "category" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => onGameModeChange("category")}
+            disabled={difficultyDisabled}
+            className="h-7 text-xs"
+          >
+            Tense Challenge
+          </Button>
+        </div>
+      </div>
 
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="outline" onClick={toggleMute} className="gap-2 bg-transparent" size="icon">

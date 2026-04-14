@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import { TranslationTool } from "@/components/translate/translation-tool"
+
+export const metadata: Metadata = {
+  title: "AI Tense Translator - English Grammar Breakdown",
+  description: "Translate sentences and get an instant AI-powered breakdown of the tenses used. Understand grammar structure and improve your English with our smart translator.",
+}
 
 export default function TranslatePage() {
   return (

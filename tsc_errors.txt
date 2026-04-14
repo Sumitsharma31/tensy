@@ -1,0 +1,96 @@
+﻿app/api/user/sync/route.ts(23,34): error TS2339: Property 'id' does not exist on type 'never'.
+app/api/user/sync/route.ts(24,32): error TS2339: Property 'id' does not exist on type 'never'.
+app/api/user/sync/route.ts(25,36): error TS2339: Property 'id' does not exist on type 'never'.
+app/api/user/sync/route.ts(26,32): error TS2339: Property 'id' does not exist on type 'never'.
+app/api/user/sync/route.ts(65,51): error TS2339: Property 'id' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(43,36): error TS2339: Property 'id' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(44,34): error TS2339: Property 'id' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(45,34): error TS2339: Property 'id' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(51,36): error TS2339: Property 'total_xp' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(52,34): error TS2339: Property 'level' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(53,45): error TS2339: Property 'lessons_completed' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(54,45): error TS2339: Property 'quizzes_completed' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(55,40): error TS2339: Property 'current_streak' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(56,40): error TS2339: Property 'longest_streak' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(60,41): error TS2339: Property 'voice_preference' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(61,36): error TS2339: Property 'voice_speed' does not exist on type 'never'.
+app/api/user/voice-settings/route.ts(62,36): error TS2339: Property 'voice_pitch' does not exist on type 'never'.
+components/providers/streak-provider.tsx(52,40): error TS2339: Property 'id' does not exist on type 'never'.
+components/providers/streak-provider.tsx(57,39): error TS2339: Property 'id' does not exist on type 'never'.
+components/providers/streak-provider.tsx(88,64): error TS2339: Property 'id' does not exist on type 'never'.
+components/providers/streak-provider.tsx(91,27): error TS2345: Argument of type '{ longest_streak: number; }' is not assignable to parameter of type 'never'.
+components/providers/streak-provider.tsx(92,43): error TS2339: Property 'id' does not exist on type 'never'.
+components/providers/streak-provider.tsx(94,20): error TS2339: Property 'catch' does not exist on type 'PromiseLike<void>'.
+components/providers/streak-provider.tsx(94,26): error TS7006: Parameter 'err' implicitly has an 'any' type.
+components/providers/streak-provider.tsx(144,16): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., "POST">', gave the following error.
+    Argument of type '{ user_id: string; current_streak: number; longest_streak: number; last_activity_date: string; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+components/providers/streak-provider.tsx(154,48): error TS2345: Argument of type '{ amount: number; }' is not assignable to parameter of type 'undefined'.
+hooks/use-challenges.ts(139,40): error TS2339: Property 'id' does not exist on type 'never'.
+hooks/use-challenges.ts(145,39): error TS2339: Property 'id' does not exist on type 'never'.
+hooks/use-challenges.ts(151,39): error TS2339: Property 'id' does not exist on type 'never'.
+hooks/use-challenges.ts(158,39): error TS2339: Property 'id' does not exist on type 'never'.
+hooks/use-challenges.ts(245,16): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., "POST">', gave the following error.
+    Argument of type '{ user_id: string; challenge_date: string; quiz_questions_completed: number; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+hooks/use-challenges.ts(254,68): error TS2345: Argument of type '{ amount: number; }' is not assignable to parameter of type 'undefined'.
+hooks/use-challenges.ts(301,16): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., "POST">', gave the following error.
+    Argument of type '{ user_id: string; challenge_date: string; sentences_built: number; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+hooks/use-challenges.ts(310,50): error TS2345: Argument of type '{ amount: number; }' is not assignable to parameter of type 'undefined'.
+hooks/use-challenges.ts(356,16): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., "POST">', gave the following error.
+    Argument of type '{ user_id: string; challenge_date: string; rainfall_score: number; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+hooks/use-challenges.ts(365,50): error TS2345: Argument of type '{ amount: number; }' is not assignable to parameter of type 'undefined'.
+services/database-service.ts(25,10): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "users", never, "POST">', gave the following error.
+    Argument of type '{ clerk_id: string; email: string; username: string | null; avatar_url: string | null; voice_preference: string; voice_speed: number; voice_pitch: number; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "users", never, "POST">', gave the following error.
+    Object literal may only specify known properties, and 'clerk_id' does not exist in type 'never[]'.
+services/database-service.ts(69,17): error TS2345: Argument of type '{ id?: string | undefined; clerk_id?: string | undefined; email?: string | undefined; username?: string | null | undefined; avatar_url?: string | null | undefined; voice_preference?: string | undefined; voice_speed?: number | undefined; voice_pitch?: number | undefined; created_at?: string | undefined; updated_at?: ...' is not assignable to parameter of type 'never'.
+services/database-service.ts(100,31): error TS2339: Property 'voice_preference' does not exist on type 'never'.
+services/database-service.ts(101,26): error TS2339: Property 'voice_speed' does not exist on type 'never'.
+services/database-service.ts(102,26): error TS2339: Property 'voice_pitch' does not exist on type 'never'.
+services/database-service.ts(109,17): error TS2345: Argument of type '{ voice_preference: string; voice_speed: number; voice_pitch: number; }' is not assignable to parameter of type 'never'.
+services/database-service.ts(121,31): error TS2339: Property 'voice_preference' does not exist on type 'never'.
+services/database-service.ts(122,26): error TS2339: Property 'voice_speed' does not exist on type 'never'.
+services/database-service.ts(123,26): error TS2339: Property 'voice_pitch' does not exist on type 'never'.
+services/database-service.ts(152,10): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., "POST">', gave the following error.
+    Argument of type '{ user_id: string; total_xp: number | undefined; level: number | undefined; lessons_completed: number | undefined; quizzes_completed: number | undefined; total_score: number | undefined; accuracy_rate: number | undefined; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+services/database-service.ts(171,32): error TS2339: Property 'total_xp' does not exist on type 'never'.
+services/database-service.ts(207,10): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., "POST">', gave the following error.
+    Argument of type '{ user_id: string; current_streak: number | undefined; longest_streak: number | undefined; total_days: number | undefined; last_activity_date: string | undefined; activity_dates: string[]; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+services/database-service.ts(236,36): error TS2339: Property 'activity_dates' does not exist on type 'never'.
+services/database-service.ts(248,39): error TS2339: Property 'last_activity_date' does not exist on type 'never'.
+services/database-service.ts(251,29): error TS2339: Property 'current_streak' does not exist on type 'never'.
+services/database-service.ts(254,29): error TS2339: Property 'current_streak' does not exist on type 'never'.
+services/database-service.ts(260,41): error TS2339: Property 'longest_streak' does not exist on type 'never'.
+services/database-service.ts(301,10): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., "POST">', gave the following error.
+    Argument of type '{ user_id: string; challenge_date: string; quiz_questions_completed: number | undefined; sentences_built: number | undefined; rainfall_score: number | undefined; daily_completed: boolean | undefined; weekly_streak_days: number | undefined; tenses_mastered: number | undefined; perfect_score_achieved: boolean | undefi...' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+services/database-service.ts(329,52): error TS2339: Property 'quiz_questions_completed' does not exist on type 'never'.
+services/database-service.ts(331,44): error TS2339: Property 'sentences_built' does not exist on type 'never'.
+services/database-service.ts(333,51): error TS2339: Property 'rainfall_score' does not exist on type 'never'.
+services/database-service.ts(369,10): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "user_badges", never, "POST">', gave the following error.
+    Argument of type '{ user_id: string; badge_id: string; badge_name: string; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "user_badges", never, "POST">', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+services/database-service.ts(414,48): error TS2339: Property 'total_xp' does not exist on type 'never'.
+services/database-service.ts(414,73): error TS2339: Property 'total_xp' does not exist on type 'never'.

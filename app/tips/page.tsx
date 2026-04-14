@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import { TipsContent } from "@/components/tips/tips-content"
+
+export const metadata: Metadata = {
+  title: "English Grammar Tips & Tricks - Master Verb Tenses",
+  description: "Discover helpful tips, memorable rules, and fast tricks to master English verb tenses. Simplify complex grammar rules with our easy-to-understand guide.",
+}
 
 export default function TipsPage() {
   return (

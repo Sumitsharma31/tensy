@@ -35,7 +35,7 @@ function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
   return shuffled
 }
@@ -49,10 +49,15 @@ export function SentenceBuilderGame() {
   const [availableWords, setAvailableWords] = useState<string[]>([])
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
   const [showResult, setShowResult] = useState(false)
-  const [currentSentences, setCurrentSentences] = useState<SentenceEntry[]>(() => selectRandomSentences("easy"))
+  const [currentSentences, setCurrentSentences] = useState<SentenceEntry[]>([])
   const [showScoreboard, setShowScoreboard] = useState(false)
   const { language } = useLanguage()
   const { recordSentenceBuilt, recordPerfectScore, recordSectionVisit } = useChallenges()
+
+  // Initialize random questions on client-side only to prevent hydration mismatch
+  useEffect(() => {
+    setCurrentSentences(selectRandomSentences("easy"))
+  }, [])
 
   // Track section visit for Explorer badge
   useEffect(() => {
@@ -60,10 +65,10 @@ export function SentenceBuilderGame() {
   }, [recordSectionVisit])
 
   const currentSentence = currentSentences[currentIndex]
-  const englishSentence = currentSentence.translations.en
-  const nativeSentence = currentSentence.translations[language as keyof typeof currentSentence.translations] ?? englishSentence
-  const sentenceWords = currentSentence.wordBank
-  const progress = ((currentIndex + 1) / currentSentences.length) * 100
+  const englishSentence = currentSentence?.translations.en || ""
+  const nativeSentence = currentSentence?.translations[language as keyof typeof currentSentence.translations] ?? englishSentence
+  const sentenceWords = currentSentence?.wordBank || []
+  const progress = currentSentences.length > 0 ? ((currentIndex + 1) / currentSentences.length) * 100 : 0
   const pointsPerCorrect = difficulty === "easy" ? 10 : difficulty === "medium" ? 20 : 30
   const correctAnswers = pointsPerCorrect ? Math.round(score / pointsPerCorrect) : 0
   const questionCount = currentSentences.length
@@ -155,6 +160,14 @@ export function SentenceBuilderGame() {
     startNewSession(difficulty)
   }, [difficulty, startNewSession])
 
+  if (currentSentences.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
   return (
     <div className={cn("space-y-6", styles.container)}>
       {/* Header with stats */}
@@ -194,7 +207,14 @@ export function SentenceBuilderGame() {
       <Card className={cn("border-2", styles.card)}>
         <CardHeader className="pb-3 sm:pb-6">
           <CardTitle className="flex items-center justify-between text-sm sm:text-base">
-            <span>{currentSentence.builderPrompt || "Translate this sentence:"}</span>
+            <div className="flex flex-col gap-0.5 sm:gap-1">
+              <span className="text-xs sm:text-sm font-bold text-primary uppercase tracking-wider">
+                {currentSentence.tense?.name || "Sentence Challenge"}
+              </span>
+              <span className="font-normal text-muted-foreground">
+                {currentSentence.builderPrompt || "Translate this sentence:"}
+              </span>
+            </div>
             <AudioButton text={englishSentence} />
           </CardTitle>
         </CardHeader>

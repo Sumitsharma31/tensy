@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import { PlaygroundContent } from "@/components/playground/playground-content"
+
+export const metadata: Metadata = {
+  title: "Interactive Tense Playground - Learn English Verbs",
+  description: "Explore all 12 English tenses with visual timelines, formulas, and AI assistance. Our interactive playground makes learning verb tenses easy and intuitive.",
+}
 
 export default function PlaygroundPage() {
   return (

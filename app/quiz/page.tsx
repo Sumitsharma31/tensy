@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import { QuizSystem } from "@/components/quiz/quiz-system"
+
+export const metadata: Metadata = {
+  title: "English Grammar Quiz - Test Your Tenses Knowledge",
+  description: "Challenge yourself with over 150 levels of our interactive English grammar quiz. Get instant feedback and improve your mastery of English tenses easily.",
+}
 
 export default function QuizPage() {
   return (

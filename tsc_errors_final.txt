@@ -1,0 +1,2 @@
+﻿components/providers/streak-provider.tsx(94,20): error TS2339: Property 'catch' does not exist on type 'PromiseLike<void>'.
+components/providers/streak-provider.tsx(94,26): error TS7006: Parameter 'err' implicitly has an 'any' type.

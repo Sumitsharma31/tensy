@@ -1,0 +1,322 @@
+{
+    "verbs": [
+        {
+            "base": "be",
+            "past": "was/were",
+            "pastParticiple": "been",
+            "presentParticiple": "being"
+        },
+        {
+            "base": "become",
+            "past": "became",
+            "pastParticiple": "become",
+            "presentParticiple": "becoming"
+        },
+        {
+            "base": "begin",
+            "past": "began",
+            "pastParticiple": "begun",
+            "presentParticiple": "beginning"
+        },
+        {
+            "base": "break",
+            "past": "broke",
+            "pastParticiple": "broken",
+            "presentParticiple": "breaking"
+        },
+        {
+            "base": "bring",
+            "past": "brought",
+            "pastParticiple": "brought",
+            "presentParticiple": "bringing"
+        },
+        {
+            "base": "build",
+            "past": "built",
+            "pastParticiple": "built",
+            "presentParticiple": "building"
+        },
+        {
+            "base": "buy",
+            "past": "bought",
+            "pastParticiple": "bought",
+            "presentParticiple": "buying"
+        },
+        {
+            "base": "catch",
+            "past": "caught",
+            "pastParticiple": "caught",
+            "presentParticiple": "catching"
+        },
+        {
+            "base": "choose",
+            "past": "chose",
+            "pastParticiple": "chosen",
+            "presentParticiple": "choosing"
+        },
+        {
+            "base": "come",
+            "past": "came",
+            "pastParticiple": "come",
+            "presentParticiple": "coming"
+        },
+        {
+            "base": "do",
+            "past": "did",
+            "pastParticiple": "done",
+            "presentParticiple": "doing"
+        },
+        {
+            "base": "drink",
+            "past": "drank",
+            "pastParticiple": "drunk",
+            "presentParticiple": "drinking"
+        },
+        {
+            "base": "drive",
+            "past": "drove",
+            "pastParticiple": "driven",
+            "presentParticiple": "driving"
+        },
+        {
+            "base": "eat",
+            "past": "ate",
+            "pastParticiple": "eaten",
+            "presentParticiple": "eating"
+        },
+        {
+            "base": "fall",
+            "past": "fell",
+            "pastParticiple": "fallen",
+            "presentParticiple": "falling"
+        },
+        {
+            "base": "feel",
+            "past": "felt",
+            "pastParticiple": "felt",
+            "presentParticiple": "feeling"
+        },
+        {
+            "base": "find",
+            "past": "found",
+            "pastParticiple": "found",
+            "presentParticiple": "finding"
+        },
+        {
+            "base": "fly",
+            "past": "flew",
+            "pastParticiple": "flown",
+            "presentParticiple": "flying"
+        },
+        {
+            "base": "forget",
+            "past": "forgot",
+            "pastParticiple": "forgotten",
+            "presentParticiple": "forgetting"
+        },
+        {
+            "base": "get",
+            "past": "got",
+            "pastParticiple": "gotten",
+            "presentParticiple": "getting"
+        },
+        {
+            "base": "give",
+            "past": "gave",
+            "pastParticiple": "given",
+            "presentParticiple": "giving"
+        },
+        {
+            "base": "go",
+            "past": "went",
+            "pastParticiple": "gone",
+            "presentParticiple": "going"
+        },
+        {
+            "base": "grow",
+            "past": "grew",
+            "pastParticiple": "grown",
+            "presentParticiple": "growing"
+        },
+        {
+            "base": "have",
+            "past": "had",
+            "pastParticiple": "had",
+            "presentParticiple": "having"
+        },
+        {
+            "base": "hear",
+            "past": "heard",
+            "pastParticiple": "heard",
+            "presentParticiple": "hearing"
+        },
+        {
+            "base": "keep",
+            "past": "kept",
+            "pastParticiple": "kept",
+            "presentParticiple": "keeping"
+        },
+        {
+            "base": "know",
+            "past": "knew",
+            "pastParticiple": "known",
+            "presentParticiple": "knowing"
+        },
+        {
+            "base": "leave",
+            "past": "left",
+            "pastParticiple": "left",
+            "presentParticiple": "leaving"
+        },
+        {
+            "base": "lose",
+            "past": "lost",
+            "pastParticiple": "lost",
+            "presentParticiple": "losing"
+        },
+        {
+            "base": "make",
+            "past": "made",
+            "pastParticiple": "made",
+            "presentParticiple": "making"
+        },
+        {
+            "base": "meet",
+            "past": "met",
+            "pastParticiple": "met",
+            "presentParticiple": "meeting"
+        },
+        {
+            "base": "pay",
+            "past": "paid",
+            "pastParticiple": "paid",
+            "presentParticiple": "paying"
+        },
+        {
+            "base": "put",
+            "past": "put",
+            "pastParticiple": "put",
+            "presentParticiple": "putting"
+        },
+        {
+            "base": "read",
+            "past": "read",
+            "pastParticiple": "read",
+            "presentParticiple": "reading"
+        },
+        {
+            "base": "run",
+            "past": "ran",
+            "pastParticiple": "run",
+            "presentParticiple": "running"
+        },
+        {
+            "base": "say",
+            "past": "said",
+            "pastParticiple": "said",
+            "presentParticiple": "saying"
+        },
+        {
+            "base": "see",
+            "past": "saw",
+            "pastParticiple": "seen",
+            "presentParticiple": "seeing"
+        },
+        {
+            "base": "sell",
+            "past": "sold",
+            "pastParticiple": "sold",
+            "presentParticiple": "selling"
+        },
+        {
+            "base": "send",
+            "past": "sent",
+            "pastParticiple": "sent",
+            "presentParticiple": "sending"
+        },
+        {
+            "base": "sing",
+            "past": "sang",
+            "pastParticiple": "sung",
+            "presentParticiple": "singing"
+        },
+        {
+            "base": "sit",
+            "past": "sat",
+            "pastParticiple": "sat",
+            "presentParticiple": "sitting"
+        },
+        {
+            "base": "sleep",
+            "past": "slept",
+            "pastParticiple": "slept",
+            "presentParticiple": "sleeping"
+        },
+        {
+            "base": "speak",
+            "past": "spoke",
+            "pastParticiple": "spoken",
+            "presentParticiple": "speaking"
+        },
+        {
+            "base": "stand",
+            "past": "stood",
+            "pastParticiple": "stood",
+            "presentParticiple": "standing"
+        },
+        {
+            "base": "swim",
+            "past": "swam",
+            "pastParticiple": "swum",
+            "presentParticiple": "swimming"
+        },
+        {
+            "base": "take",
+            "past": "took",
+            "pastParticiple": "taken",
+            "presentParticiple": "taking"
+        },
+        {
+            "base": "teach",
+            "past": "taught",
+            "pastParticiple": "taught",
+            "presentParticiple": "teaching"
+        },
+        {
+            "base": "tell",
+            "past": "told",
+            "pastParticiple": "told",
+            "presentParticiple": "telling"
+        },
+        {
+            "base": "think",
+            "past": "thought",
+            "pastParticiple": "thought",
+            "presentParticiple": "thinking"
+        },
+        {
+            "base": "understand",
+            "past": "understood",
+            "pastParticiple": "understood",
+            "presentParticiple": "understanding"
+        },
+        {
+            "base": "wear",
+            "past": "wore",
+            "pastParticiple": "worn",
+            "presentParticiple": "wearing"
+        },
+        {
+            "base": "win",
+            "past": "won",
+            "pastParticiple": "won",
+            "presentParticiple": "winning"
+        },
+        {
+            "base": "write",
+            "past": "wrote",
+            "pastParticiple": "written",
+            "presentParticiple": "writing"
+        }
+    ]
+}

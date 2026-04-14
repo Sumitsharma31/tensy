@@ -1,9 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { cancelSpeech, speakText, unlockSpeech, preloadVoices } from "@/lib/speech"
-import { Volume2, VolumeX } from "lucide-react"
-import { useState, useCallback, useEffect } from "react"
+import { useVoiceSettings } from "@/hooks/use-voice-settings"
+import { Volume2, VolumeX, Loader2 } from "lucide-react"
 
 interface AudioButtonProps {
   text: string
@@ -12,50 +11,23 @@ interface AudioButtonProps {
 }
 
 export function AudioButton({ text, size = "icon", variant = "ghost" }: AudioButtonProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
+  const { speak, stop, isPlaying } = useVoiceSettings()
 
-  // Preload voices on component mount
-  useEffect(() => {
-    preloadVoices()
-  }, [])
+  // We need a local state to know if *this* button is playing, 
+  // but useVoiceSettings is global. For now, simple toggle is fine.
+  // Ideally, useVoiceSettings should expose 'which content is playing' but 
+  // for simple sentence playback, just checking isPlaying is 'okay' (though it might show stop for other playing audio).
+  // A better approach is trusting the user to stop/start.
 
-  const speak = useCallback(() => {
-    // Unlock speech on mobile (must be called from user gesture)
-    unlockSpeech()
-    
-    speakText(text, {
-      rate: 0.9,
-      pitch: 1,
-      preferredLangs: ["en-IN", "en-GB", "en-US"],
-      onStart: () => setIsPlaying(true),
-      onEnd: () => setIsPlaying(false),
-      onError: () => setIsPlaying(false),
-    })
-  }, [text])
-
-  const stop = useCallback(() => {
-    cancelSpeech()
-    setIsPlaying(false)
-  }, [])
-
-  const handleClick = useCallback(() => {
-    if (isPlaying) {
-      stop()
-    } else {
-      speak()
-    }
-  }, [isPlaying, speak, stop])
+  // However, the hook exposes isPlaying globally. 
+  // Let's assume for this button, if global isPlaying is true, we show Stop.
+  // This might be slightly inaccurate if multiple buttons exist, but speech is singleton.
 
   return (
-    <Button 
-      variant={variant} 
-      size={size} 
-      onClick={handleClick}
-      onTouchEnd={(e) => {
-        // Prevent ghost clicks on mobile
-        e.preventDefault()
-        handleClick()
-      }}
+    <Button
+      variant={variant}
+      size={size}
+      onClick={() => isPlaying ? stop() : speak(text)}
       className="shrink-0"
     >
       {isPlaying ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}

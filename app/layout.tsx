@@ -3,12 +3,15 @@ import type { Metadata, Viewport } from "next"
 import Script from "next/script"
 import { Poppins, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { LanguageProvider } from "@/components/providers/language-provider"
 import { StreakProvider } from "@/components/providers/streak-provider"
+import { VoiceSettingsProvider } from "@/components/providers/voice-settings-provider"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { TenseyChat } from "@/components/chat/tensey-chat"
+import { LoginPromptModal } from "@/components/auth/login-prompt-modal"
 import "./globals.css"
 
 const poppins = Poppins({
@@ -291,7 +294,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavigationJsonLd) }}
         />
-        
+
         {/* Additional SEO Meta Tags */}
         <meta name="subject" content="English Grammar Learning - Tense Playground" />
         <meta name="language" content="en" />
@@ -299,11 +302,11 @@ export default function RootLayout({
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="7 days" />
         <meta name="copyright" content="Tense Playground" />
-        
+
         {/* Preconnect for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-DHFVGETWWL"
           strategy="afterInteractive"
@@ -318,19 +321,34 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${poppins.className} ${geistMono.variable} font-sans antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <LanguageProvider>
-            <StreakProvider>
-              <div className="min-h-screen flex flex-col">
-                <Header />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-              <TenseyChat />
-              <Analytics />
-            </StreakProvider>
-          </LanguageProvider>
-        </ThemeProvider>
+        <ClerkProvider
+          appearance={{
+            baseTheme: undefined,
+            variables: {
+              colorPrimary: '#6366f1',
+              colorBackground: '#ffffff',
+              colorInputBackground: '#ffffff',
+              colorInputText: '#1e293b',
+            },
+          }}
+        >
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <LanguageProvider>
+              <StreakProvider>
+                <VoiceSettingsProvider>
+                  <div className="min-h-screen flex flex-col">
+                    <Header />
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                  </div>
+                  <TenseyChat />
+                  <LoginPromptModal />
+                  <Analytics />
+                </VoiceSettingsProvider>
+              </StreakProvider>
+            </LanguageProvider>
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   )

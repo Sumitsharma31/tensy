@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import { ChallengesContent } from "@/components/challenges/challenges-content"
+
+export const metadata: Metadata = {
+  title: "Daily Grammar Challenges - Improve English Skills",
+  description: "Test your knowledge with daily English grammar challenges. Maintain your learning streak and earn XP while mastering verb tenses and grammar rules.",
+}
 
 export default function ChallengesPage() {
   return (

@@ -10,6 +10,8 @@ export interface FallingWord {
   removed?: boolean
   scale?: number
   opacity?: number
+  isTarget?: boolean // For category mode
+  isCorrectlyCaught?: boolean // For visual feedback
 }
 
 export interface GameSentence {
@@ -19,3 +21,4 @@ export interface GameSentence {
 }
 
 export type DifficultyLevel = Difficulty
+export type GameMode = "sentence" | "category"

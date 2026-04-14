@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import { RainfallGame } from "@/components/game/rainfall-game"
+
+export const metadata: Metadata = {
+  title: "Word Rainfall Game - Fun English Grammar Practice",
+  description: "Catch falling words in the right order to form proper English sentences. Play the fun Word Rainfall Game and improve your grammar skills and reaction time.",
+}
 
 export default function RainfallPage() {
   return (
@@ -6,7 +12,7 @@ export default function RainfallPage() {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Word Rainfall</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">Gravity Grammar</h1>
             <p className="text-muted-foreground text-lg">
               Catch falling words in the correct order to form sentences. Beat the clock!
             </p>
