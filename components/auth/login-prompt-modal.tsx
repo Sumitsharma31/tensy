@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useUser } from "@clerk/nextjs"
+import { useAuth } from "@clerk/nextjs"
 import { X, Lock, Shield, Cloud } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,52 +17,36 @@ const DISMISS_KEY = "login-prompt-dismissed"
 const DISMISS_DURATION = 24 * 60 * 60 * 1000 // 24 hours
 
 export function LoginPromptModal() {
-    const { isSignedIn, isLoaded } = useUser()
+    const { isSignedIn, isLoaded } = useAuth()
     const [isOpen, setIsOpen] = useState(false)
-    const [isMounted, setIsMounted] = useState(false)
     const router = useRouter()
 
-    // Prevent hydration mismatch by only running client-side logic after mount
     useEffect(() => {
-        setIsMounted(true)
-    }, [])
-
-    useEffect(() => {
-        if (!isMounted) return
-
         // Don't show if user is signed in or auth is still loading
         if (!isLoaded || isSignedIn) {
             return
         }
 
-        // Safely check if user dismissed it recently on the client side
-        try {
-            const dismissedAt = localStorage.getItem(DISMISS_KEY)
-            if (dismissedAt) {
-                const timeSinceDismiss = Date.now() - parseInt(dismissedAt)
-                if (timeSinceDismiss < DISMISS_DURATION) {
-                    return // Still within cooldown period
-                }
+        // Check if user dismissed it recently
+        const dismissedAt = localStorage.getItem(DISMISS_KEY)
+        if (dismissedAt) {
+            const timeSinceDismiss = Date.now() - parseInt(dismissedAt)
+            if (timeSinceDismiss < DISMISS_DURATION) {
+                return // Still within cooldown period
             }
-        } catch (error) {
-            console.error("Error accessing localStorage:", error)
         }
 
-        // Show modal after 3 seconds
+        // Show modal after 15 seconds
         const timer = setTimeout(() => {
             setIsOpen(true)
-        }, 3000)
+        }, 15000) // 15 seconds
 
         return () => clearTimeout(timer)
-    }, [isSignedIn, isLoaded, isMounted])
+    }, [isSignedIn, isLoaded])
 
     const handleDismiss = () => {
         setIsOpen(false)
-        try {
-            localStorage.setItem(DISMISS_KEY, Date.now().toString())
-        } catch (error) {
-            console.error("Error setting localStorage:", error)
-        }
+        localStorage.setItem(DISMISS_KEY, Date.now().toString())
     }
 
     const handleSignIn = () => {
@@ -70,8 +54,7 @@ export function LoginPromptModal() {
         handleDismiss()
     }
 
-    // Hydration-safe rendering
-    if (!isMounted || !isLoaded || isSignedIn) {
+    if (!isLoaded || isSignedIn) {
         return null
     }
 
