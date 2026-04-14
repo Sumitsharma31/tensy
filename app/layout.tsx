@@ -14,6 +14,7 @@ import { TenseyChat } from "@/components/chat/tensey-chat"
 import { LoginPromptModal } from "@/components/auth/login-prompt-modal"
 import "./globals.css"
 
+
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -142,6 +143,7 @@ export const metadata: Metadata = {
   description:
     "Tense Playground is a free AI-powered platform to master all 12 English tenses. Learn past, present, and future tenses through fun grammar games, quizzes, AI chat assistance, and interactive exercises. Perfect for ESL learners and students.",
   keywords: [
+    "tensy",
     "Tense Playground",
     "tense playground",
     "TensePlayground",
@@ -171,7 +173,7 @@ export const metadata: Metadata = {
     "AI-powered grammar",
     "grammar AI assistant",
   ],
-  authors: [{ name: "Dharmendra Kumar" }],
+  authors: [{ name: "Sumit sharma" }],
   creator: "Tense Playground",
   publisher: "Tense Playground",
   generator: "Next.js",
@@ -250,7 +252,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   category: "education",
   verification: {
-    google: "6s1zvqQYarzATN68TYLQqk3G5xtx7d1tt7gGzm4aWzE",
+    google: "wqUHJf-VdWUYFMO9Lf_RlVGdp3chu9z5zw0lUFliqFE",
   },
   other: {
     "mobile-web-app-capable": "yes",
