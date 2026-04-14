@@ -30,10 +30,10 @@ const geistMono = Geist_Mono({
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Tense Playground",
-  alternateName: ["TensePlayground", "Tense-Playground"],
+  name: "Tensy (Tense Playground)",
+  alternateName: ["Tensy", "TensePlayground", "Tense-Playground"],
   description:
-    "Tense Playground is a free AI-powered English grammar learning platform. Master all 12 English tenses through interactive games, quizzes, AI-assisted learning, and exercises. Perfect for ESL learners, students, and anyone wanting to improve their English grammar skills.",
+    "Tensy, also known as Tense Playground, is a free AI-powered English grammar learning platform. Master all 12 English tenses through interactive games, quizzes, AI-assisted learning, and exercises. Perfect for ESL learners, students, and anyone wanting to improve their English grammar skills.",
   url: "https://tense-playground.vercel.app",
   applicationCategory: "EducationalApplication",
   operatingSystem: "Any",
@@ -48,7 +48,7 @@ const jsonLd = {
   },
   publisher: {
     "@type": "Organization",
-    name: "Tense Playground",
+    name: "Tensy (Tense Playground)",
     url: "https://tense-playground.vercel.app",
   },
   keywords:
@@ -62,19 +62,19 @@ const jsonLd = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Tense Playground",
+  name: "Tensy (Tense Playground)",
   url: "https://tense-playground.vercel.app",
   logo: "https://tense-playground.vercel.app/og-image.png",
   sameAs: [],
   description:
-    "Tense Playground - The best free AI-powered online tool to learn and practice English tenses through interactive games, quizzes, and AI assistance.",
+    "Tensy, also known as Tense Playground - The best free AI-powered online tool to learn and practice English tenses through interactive games, quizzes, and AI assistance.",
 }
 
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Tense Playground",
-  alternateName: "TensePlayground",
+  name: "Tensy (Tense Playground)",
+  alternateName: "Tensy",
   url: "https://tense-playground.vercel.app",
 }
 
@@ -137,11 +137,11 @@ const siteNavigationJsonLd = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Tense Playground – AI-Powered English Tenses Learning | Free Grammar Games & Quizzes",
-    template: "%s | Tense Playground",
+    default: "Tensy (Tense Playground) – AI English Grammar Learning Platform",
+    template: "%s | Tensy",
   },
   description:
-    "Tense Playground is a free AI-powered platform to master all 12 English tenses. Learn past, present, and future tenses through fun grammar games, quizzes, AI chat assistance, and interactive exercises. Perfect for ESL learners and students.",
+    "Tensy, also known as Tense Playground, is a free AI-powered platform to master all 12 English tenses. Learn past, present, and future tenses through fun grammar games, quizzes, AI chat assistance, and interactive exercises. Perfect for ESL learners and students.",
   keywords: [
     "tensy",
     "Tense Playground",
@@ -174,10 +174,10 @@ export const metadata: Metadata = {
     "grammar AI assistant",
   ],
   authors: [{ name: "Sumit sharma" }],
-  creator: "Tense Playground",
-  publisher: "Tense Playground",
+  creator: "Tensy (Tense Playground)",
+  publisher: "Tensy (Tense Playground)",
   generator: "Next.js",
-  applicationName: "Tense Playground",
+  applicationName: "Tensy (Tense Playground)",
   referrer: "origin-when-cross-origin",
   formatDetection: {
     email: false,
@@ -192,25 +192,25 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://tense-playground.vercel.app",
-    title: "Tense Playground – AI-Powered English Tenses Learning Free",
+    title: "Tensy (Tense Playground) – AI English Grammar Learning Platform",
     description:
-      "Tense Playground is the best free AI-powered tool to master English tenses. Play grammar games, chat with AI tutor, take quizzes, and practice all 12 tenses interactively!",
-    siteName: "Tense Playground",
+      "Tensy, also known as Tense Playground, is the best free AI-powered tool to master English tenses. Play grammar games, chat with AI tutor, take quizzes, and practice all 12 tenses interactively!",
+    siteName: "Tensy (Tense Playground)",
     images: [
       {
         url: "https://tense-playground.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Tense Playground - Free English Tenses Learning Platform",
+        alt: "Tensy (Tense Playground) - Free English Tenses Learning Platform",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tense Playground – AI-Powered English Tenses Learning",
+    title: "Tensy (Tense Playground) – AI English Grammar Learning Platform",
     description:
-      "Master all 12 English tenses through interactive games, AI chat assistance, and quizzes. Free AI-powered grammar learning platform!",
+      "Tensy, also known as Tense Playground, is an AI-powered English grammar learning platform. Master tenses through games, AI chat, and quizzes.",
     images: ["https://tense-playground.vercel.app/og-image.png"],
     creator: "@tenseplayground",
     site: "@tenseplayground",
@@ -258,7 +258,7 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "default",
-    "apple-mobile-web-app-title": "Tense Playground",
+    "apple-mobile-web-app-title": "Tensy",
   },
 }
 
@@ -298,12 +298,12 @@ export default function RootLayout({
         />
 
         {/* Additional SEO Meta Tags */}
-        <meta name="subject" content="English Grammar Learning - Tense Playground" />
+        <meta name="subject" content="English Grammar Learning - Tensy (Tense Playground)" />
         <meta name="language" content="en" />
         <meta name="rating" content="General" />
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="7 days" />
-        <meta name="copyright" content="Tense Playground" />
+        <meta name="copyright" content="Tensy (Tense Playground)" />
 
         {/* Preconnect for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
