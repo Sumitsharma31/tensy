@@ -304,7 +304,10 @@ export default function RootLayout({
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="7 days" />
         <meta name="copyright" content="Tense Playground" />
-
+        <meta
+          name="google-adsense-account"
+          content="ca-pub-3407443667160242"
+        />
         {/* Preconnect for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
